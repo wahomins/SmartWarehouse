@@ -1,0 +1,26 @@
+# Byte-compiled / optimized Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local development environment
+.env
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Dependency directories
+venv/
+env/
+
+# Logs and database files
+*.log
+*.db
+
+# Project-specific files or directories
+instance/
+
+# Miscellaneous
+*.swp
+.DS_Store
