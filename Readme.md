@@ -20,6 +20,7 @@ To set up the project on your local machine, follow the instructions below.
 
 2. Navigate to the project directory:
 
+    for the backend `cd BackEnd`
 
 3. Create a virtual environment (optional but recommended):
 
