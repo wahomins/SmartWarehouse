@@ -3,19 +3,20 @@ from bson.binary import Binary
 from bson.objectid import ObjectId
 from cryptography.fernet import Fernet
 import base64
-import os
+from app.config import app_config
 
 class UserModel:
     def __init__(self):
         # MongoDB connection
-        mongodb_uri = os.getenv("MONGODB_URI")
+        mongodb_uri = app_config.MONGODB_URI
+        mongodb_name = app_config.MONGODB_NAME
         client = MongoClient(mongodb_uri)
-        self.db = client.get_default_database()
+        self.db = client[mongodb_name]
         self.users_collection = self.db['users']
         
 
         # Encryption key
-        encryption_key = os.getenv("ENCRYPTION_KEY")
+        encryption_key = app_config.ENCRYPTION_KEY
          
         self.fernet = Fernet(base64.urlsafe_b64decode(encryption_key))
 
@@ -26,6 +27,21 @@ class UserModel:
         # Create a new user in the MongoDB collection
         user_id = self.users_collection.insert_one(encrypted_user_data).inserted_id
         return str(user_id)
+
+    def update_user(self, user_id, updated_data):
+        # Encrypt password and full name before storing in MongoDB
+        encrypted_user_data = self._encrypt_user_data(updated_data)
+        filter = {'_id': ObjectId(user_id)}
+        update = {'$set': encrypted_user_data}
+        encrypted_user = self.users_collection.find_one_and_update(filter, update, return_document=True)
+        
+        if encrypted_user:
+            # Decrypt the user data before returning
+            user_data = self._decrypt_user_data(encrypted_user)
+            return user_data
+        else:
+            return None
+        # return formart_mongo_response(result)
 
     def get_user_by_id(self, user_id):
         # Retrieve a user by their ID from the MongoDB collection

@@ -1,22 +1,53 @@
-from flask import Flask
-from flask_restful import Api
-from dotenv import load_dotenv
-from pymongo import MongoClient
-import os
+from app import create_app
+from flask import jsonify, request
 
-# Load environment variables from .env file
-load_dotenv()
+app = create_app()
 
-app = Flask(__name__)
-api = Api(app)
+@app.before_request
+def log_request_data():
+    # Log the request data
+    app.logger.info('Request: %s %s %s', request.headers)
+    # app.logger.info('Request: %s %s %s', request.method, request.path, request.data.decode('utf-8').replace('\r\n', '').replace(' ', ''))
 
-# MongoDB connection
-mongodb_uri = os.getenv("MONGODB_URI")
-app_port = os.getenv("PORT")
-client = MongoClient(mongodb_uri)
-db = client.get_default_database()
+@app.after_request
+def log_response_data(response):
+    # Log the response status and request method
+    app.logger.info('Response: %s %s %s', response.status, request.method, request.path)
 
-# Define routes and middleware here
+    return response
+
+
+@app.errorhandler(Exception)
+def handle_internal_error(e):
+    # Log the error (optional)
+    app.logger.exception('Unhandled Exception')
+
+    # Return a JSON response with the error message
+    response = {
+        'message': 'Something went wrong',
+    }
+    return jsonify(response), 500
+
+@app.errorhandler(404)
+def handle_not_found_error(e):
+    # Return a JSON response for 404 errors
+    response = {
+        'message': 'Not Found',
+    }
+    return jsonify(response), 404
+
+@app.errorhandler(405)
+def handle_not_found_error(e):
+    # Return a JSON response for 404 errors
+    response = {
+        'message': 'Method not allowed for this route',
+    }
+    return jsonify(response), 405
+
+@app.route('/status', methods=['GET'])
+def status():
+    return 'Running!'
+
 
 if __name__ == '__main__':
-    app.run(port=app_port)
+    app.run()
