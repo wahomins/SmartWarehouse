@@ -10,6 +10,7 @@ To set up the project on your local machine, follow the instructions below.
 
 - Python installed on your system
 - MongoDB installed and running
+- Up and running Redis client
 
 ### Installation
 
@@ -20,11 +21,18 @@ To set up the project on your local machine, follow the instructions below.
 
 2. Navigate to the project directory:
 
-    for the backend `cd BackEnd`
+    for the backend 
+
+    `cd BackEnd`
+
+    If you want to install redis via docker
+    ```sh
+    $ docker run -d --name="SmartWareHouse-redis" -p 6379:6379 redis
+    ```
 
 3. Create a virtual environment (optional but recommended):
 
-    ```
+    ```sh
     python -m venv env
     ```
 
@@ -49,21 +57,10 @@ Activate the virtual environment:
     ```
 
 ### Configuration
+- There are 3 configurations `development`, `staging` and `production` in `config.py`. Default is `development`
+- Create a `.env` file from `.env.example` and set appropriate environment variables before running the project
 
-1. Create a `.env` file in the root directory.
-
-2. Define the following environment variables in the `.env` file:
-
-    ```
-    MONGODB_URI=<your-mongodb-uri>
-    MQTT_BROKER=<mqtt-broker-url>
-    MQTT_USERNAME=<mqtt-username>
-    MQTT_PASSWORD=<mqtt-password>
-    PORT=5550
-    ```
-
-
-Replace `<your-mongodb-uri>` with the connection URI for your MongoDB database. Set `<mqtt-broker-url>`, `<mqtt-username>`, and `<mqtt-password>` with the appropriate MQTT broker details.
+- Replace `<your-mongodb-uri>` with the connection URI for your MongoDB database. Set `<mqtt-broker-url>`, `<mqtt-username>`, and `<mqtt-password>` with the appropriate MQTT broker details.
 
 ### Starting the Server
 
@@ -73,23 +70,48 @@ To start the server, run the following command:
 
 The server will start running on the default port. You can modify the port number in the `server.py` file if needed.
 
-## API Endpoints
+#
+- Logs would be generated under `log` folder
 
-- `GET /api/warehouse`: Retrieve information about the warehouse status.
-- `POST /api/warehouse`: Update the warehouse status.
-- Add more endpoints as needed for your specific requirements.
+### Running celery workers
 
-## Contributing
+- Run redis locally before running celery worker
+- Celery worker can be started with following command
+```sh
+# run following command in a separate terminal
+$ celery -A celery_worker.celery worker --loglevel='INFO'
+# (append `--pool=solo` for windows)
+```
 
-Contributions to the IOT Smart Warehouse project are welcome! If you'd like to contribute, please follow these steps:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Implement your changes and test thoroughly.
-4. Commit your changes and push the branch to your forked repository.
-5. Submit a pull request describing your changes.
+# Preconfigured Packages
+Includes preconfigured packages to kick start flask app by just setting appropriate configuration.
 
-Please adhere to the coding conventions and commit message guidelines in this project.
+| Package 	| Usage 	|
+|-----	|-----	|
+| [celery](https://docs.celeryproject.org/en/stable/getting-started/introduction.html) 	| Running background tasks 	|
+| [redis](https://redislabs.com/lp/python-redis/) 	| A Python Redis client for caching 	|
+| [flask-cors](https://flask-cors.readthedocs.io/) 	| Configuring CORS 	|
+| [python-dotenv](https://pypi.org/project/python-dotenv/) 	| Reads the key-value pair from .env file and adds them to environment variable. 	|
+| [marshmallow](https://marshmallow.readthedocs.io/en/stable/) 	| A package for creating Schema, serialization, deserialization 	|
+| [webargs](https://webargs.readthedocs.io/) 	| A Python library for parsing and validating HTTP request objects 	|
+
+`autopep8` & `flake8` as `dev` packages for `linting and formatting`
+
+# Test
+  Test if this app has been installed correctly and it is working via following curl commands (or use in Postman)
+- Check if the app is running via `status` API
+```shell
+$ curl --location --request GET 'http://localhost:5000/status'
+```
+- Check if core app API and celery task is working via
+```shell
+$ curl --location --request GET 'http://localhost:5000/api/core/test'
+```
+- Check if authorization is working via (change `API Key` as per you `.env`)
+```shell
+$ curl --location --request GET 'http://localhost:5000/api/core/restricted' --header 'x-api-key: 436236939443955C11494D448451F'
+```
 
 ## Contact
 
