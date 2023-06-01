@@ -1,6 +1,6 @@
 # IOT Smart Warehouse
 
-Welcome to the IOT Smart Warehouse project! This project aims to develop a smart warehouse system using Python, Flask, MQTT, and MongoDB. The system will enable real-time monitoring and control of various warehouse operations.
+Welcome to the IOT Smart Warehouse project! This project aims to develop a smart warehouse system using Python, Flask, MQTT, React-JS and MongoDB. The system will enable real-time monitoring and control of various warehouse operations.
 
 ## Getting Started
 

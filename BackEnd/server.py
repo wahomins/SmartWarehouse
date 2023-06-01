@@ -1,13 +1,17 @@
 from app import create_app
 from flask import jsonify, request
-
+from app.core.tasks import seed_task
+from app.dbSeed import run_seed
 app = create_app()
+
 
 @app.before_request
 def log_request_data():
     # Log the request data
-    app.logger.info('Request: %s %s %s', request.headers)
-    # app.logger.info('Request: %s %s %s', request.method, request.path, request.data.decode('utf-8').replace('\r\n', '').replace(' ', ''))
+    # app.logger.info('Request: %s %s %s', request.headers)
+    app.logger.info('Request: %s %s %s', request.method, request.path,
+                    request.data.decode('utf-8').replace('\r\n', '').replace(' ', ''))
+
 
 @app.after_request
 def log_response_data(response):
@@ -28,6 +32,7 @@ def handle_internal_error(e):
     }
     return jsonify(response), 500
 
+
 @app.errorhandler(404)
 def handle_not_found_error(e):
     # Return a JSON response for 404 errors
@@ -35,6 +40,7 @@ def handle_not_found_error(e):
         'message': 'Not Found',
     }
     return jsonify(response), 404
+
 
 @app.errorhandler(405)
 def handle_not_found_error(e):
@@ -44,9 +50,25 @@ def handle_not_found_error(e):
     }
     return jsonify(response), 405
 
+
 @app.route('/status', methods=['GET'])
 def status():
     return 'Running!'
+
+# @app.route('/api/seed_task', methods=['POST'])
+# def seed():
+#     # Trigger the seed execution task
+#     result = seed_task.apply_async()
+#     return jsonify({'message': 'Seed process started.'}), 200
+
+
+@app.route('/api/seed', methods=['POST'])
+def seed():
+    # Trigger the seed execution task
+    run_seed()
+    return jsonify({'message': 'Seed process started.'}), 200
+
+
 
 
 if __name__ == '__main__':
