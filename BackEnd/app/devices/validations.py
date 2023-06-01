@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, validator, ValidationError
 from typing import Optional
 
+
 class CreateDeviceModel(BaseModel):
     name: str
     description: str
@@ -13,6 +14,7 @@ class UpdateDeviceModel(BaseModel):
     description: Optional[str]
     mac_address: Optional[str]
     local_ip: Optional[str]
+
 
 class AuthModel(BaseModel):
     device_id: str

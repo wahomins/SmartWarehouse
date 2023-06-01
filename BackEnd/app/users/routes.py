@@ -11,28 +11,30 @@ user_bp = Blueprint('user', __name__)
 logger = LocalProxy(lambda: current_app.logger)
 user_model = UserModel()
 
+
 @user_bp.route('/', methods=['POST'])
 @validate(body=CreateUserModel)
 def create_user():
     data = request.json
-    data['createdOn'] = f'{datetime.now()}'
-    
+    data['created_on'] = f'{datetime.now()}'
+
     user_id = user_model.create_user(data)
-    
+
     return jsonify({'message': 'User created successfully', 'user_id': str(user_id)}), 201
+
 
 @user_bp.route('/<user_id>', methods=['PUT'])
 @authenticate
 @validate(body=UpdateUserModel)
 def update_user(decoded_token, user_id):
-    
+
     data = request.json
-    data['updatedBy'] = decoded_token['user_id']
-    data['updatedOn'] = f'{datetime.now()}'
-    
+    data['updated_by'] = decoded_token['user_id']
+    data['updated_on'] = f'{datetime.now()}'
+
     # Update the user using the UserModel
     updated = user_model.update_user(user_id, data)
-    
+
     if updated:
         # updated_data = json.loads(updated.decode('utf-8'))  # Convert bytes to JSON-serializable format
         updated.pop('password', None)
@@ -40,33 +42,36 @@ def update_user(decoded_token, user_id):
     else:
         return jsonify({'error': 'User not found'}), 404
 
+
 @user_bp.route('/login', methods=['POST'])
 @validate(body=LoginModel)
 def login():
     data = request.json
-    
+
     # Authenticate the user
     user = user_model.authenticate_user(data['username'], data['password'])
     if not user:
         return jsonify({'error': 'Invalid email or password'}), 401
-    
+
     # Generate a JSON Web Token (JWT) for the authenticated user
     token = generate_token(user['_id'], user['email'], user['full_name'])
-    
+
     return jsonify({'token': token, 'user_id': str(user['_id']), 'email': user['email'], 'full_name': user['full_name']}), 200
+
 
 @user_bp.route('/reset-password', methods=['POST'])
 @authenticate
 def reset_password():
     data = request.json
-    
+
     # Reset the user's password
     reset_successful = user_model.reset_password(data['email'], data['new_password'])
-    
+
     if reset_successful:
         return jsonify({'message': 'Password reset successful'}), 200
     else:
         return jsonify({'error': 'User not found'}), 404
+
 
 @user_bp.route('/', methods=['GET'])
 @authenticate
@@ -80,6 +85,7 @@ def get_all_users():
 
     return jsonify(users), 200
 
+
 @user_bp.route('/<user_id>', methods=['GET'])
 @authenticate
 def get_user(user_id):
@@ -92,7 +98,8 @@ def get_user(user_id):
         return jsonify(user), 200
     else:
         return jsonify({'error': 'User not found'}), 404
-    
+
+
 @user_bp.route('/users/<user_id>', methods=['DELETE'])
 @authenticate
 def delete_user(user_id):

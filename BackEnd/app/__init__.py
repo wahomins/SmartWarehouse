@@ -11,7 +11,6 @@ from .config import config as app_config
 from .utils.utils import CustomJSONEncoder
 
 
-
 celery = Celery(__name__)
 
 
@@ -34,10 +33,10 @@ def create_app():
     # celery is not able to pick result_backend and hence using update
     celery.conf.update(result_backend=app.config['RESULT_BACKEND'])
 
-    #ROUTES
+    # ROUTES
     from .core.views import core as core_blueprint
     from .users.routes import user_bp as user_blueprint
-
+    from .devices.routes import device_bp as device_blueprint
 
     app.register_blueprint(
         core_blueprint,
@@ -46,6 +45,10 @@ def create_app():
     app.register_blueprint(
         user_blueprint,
         url_prefix='/api/users'
+    )
+    app.register_blueprint(
+        device_blueprint,
+        url_prefix='/api/devices'
     )
 
     return app

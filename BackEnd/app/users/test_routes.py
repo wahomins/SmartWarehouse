@@ -33,6 +33,7 @@ def app():
 #         # Return the created user for further testing
 #         return response.json['user']
 
+
 @pytest.fixture(scope='function')
 def registered_user(app):
     with app as client:
@@ -50,7 +51,6 @@ def registered_user(app):
         # Add more assertions to validate the response data
 
         return response_data['user']
-
 
 
 def test_login(app):
@@ -74,6 +74,7 @@ def test_login(app):
     assert 'email' in response_data
     assert 'full_name' in response_data
 
+
 def test_login_successful(app, registered_user):
     # logger.debug(f'Running Login Test Successful: {registered_user}')
 
@@ -86,6 +87,7 @@ def test_login_successful(app, registered_user):
         # Assert that the response is as expected for a successful login
         assert response.status_code == 200
         # Add more assertions to validate the response data
+
 
 def test_login_invalid_credentials(app):
     # logger.debug(f'Running Login Test INalid Creds: ')

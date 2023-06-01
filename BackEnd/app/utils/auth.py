@@ -8,6 +8,7 @@ logger = LocalProxy(lambda: current_app.logger)
 # Secret key for JWT
 SECRET_KEY = "your_secret_key"
 
+
 def generate_token(user_id, email, full_name):
     """
     Generate a JSON Web Token (JWT) for authentication.
@@ -20,6 +21,19 @@ def generate_token(user_id, email, full_name):
     }
     token = jwt.encode(payload=payload, key=SECRET_KEY)
     return token
+
+def generate_device_token(device_id, name):
+    """
+    Generate a JSON Web Token (JWT) for authentication.
+    """
+    payload = {
+        'device_id': str(device_id),
+        'name': name,
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token expiration time (1 hour)
+    }
+    token = jwt.encode(payload=payload, key=SECRET_KEY)
+    return token
+
 
 def decode_token(token):
     """
@@ -35,11 +49,15 @@ def decode_token(token):
         # Token is invalid
         return None
 
+
 def authenticate(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Extract the token from the request headers
         token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'error': 'Missing token'}), 401
+
         # Split the header value by whitespace
         parts = token.split()
 
