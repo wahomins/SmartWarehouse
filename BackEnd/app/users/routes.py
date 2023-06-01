@@ -92,3 +92,14 @@ def get_user(user_id):
         return jsonify(user), 200
     else:
         return jsonify({'error': 'User not found'}), 404
+    
+@user_bp.route('/users/<user_id>', methods=['DELETE'])
+@authenticate
+def delete_user(user_id):
+    result = user_model.delete_user(user_id)
+    if result == 1:
+        # User successfully deleted
+        return jsonify({'message': 'User deleted successfully'}), 200
+    else:
+        # User not found
+        return jsonify({'error': 'User not found'}), 404

@@ -6,8 +6,8 @@ app = create_app()
 @app.before_request
 def log_request_data():
     # Log the request data
-    app.logger.info('Request: %s %s %s', request.headers)
-    # app.logger.info('Request: %s %s %s', request.method, request.path, request.data.decode('utf-8').replace('\r\n', '').replace(' ', ''))
+    # app.logger.info('Request: %s %s %s', request.headers)
+    app.logger.info('Request: %s %s %s', request.method, request.path, request.data.decode('utf-8').replace('\r\n', '').replace(' ', ''))
 
 @app.after_request
 def log_response_data(response):

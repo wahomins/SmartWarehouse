@@ -76,6 +76,11 @@ class UserModel:
             decrypted_users.append(user_data)
         
         return decrypted_users
+    
+    def delete_user(self, user_id):
+        # Delete a user by their ID from the MongoDB collection
+        result = self.users_collection.delete_one({"_id": ObjectId(user_id)})
+        return result.deleted_count
 
     def authenticate_user(self, username_or_email, password):
         # Authenticate a user by their username or email and password
