@@ -7,6 +7,8 @@ class CreateDeviceModel(BaseModel):
     description: str
     mac_address: Optional[str]
     local_ip: Optional[str]
+    warehouse_id: Optional[str]
+    topic: Optional[str]
 
 
 class UpdateDeviceModel(BaseModel):
@@ -14,6 +16,8 @@ class UpdateDeviceModel(BaseModel):
     description: Optional[str]
     mac_address: Optional[str]
     local_ip: Optional[str]
+    warehouse_id: Optional[str]
+    topic: Optional[str]
 
 
 class AuthModel(BaseModel):

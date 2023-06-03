@@ -9,12 +9,13 @@ logger = LocalProxy(lambda: current_app.logger)
 SECRET_KEY = "your_secret_key"
 
 
-def generate_token(user_id, email, full_name):
+def generate_token(user_id, email, full_name, role):
     """
     Generate a JSON Web Token (JWT) for authentication.
     """
     payload = {
         'user_id': str(user_id),
+        'role': str(role),
         'email': email,
         'full_name': full_name,
         'exp': datetime.utcnow() + timedelta(hours=1)  # Token expiration time (1 hour)
@@ -65,10 +66,8 @@ def authenticate(f):
         if len(parts) == 2 and parts[0].lower() == 'bearer':
             # Extract the token from the header
             token_ = parts[1]
-            logger.debug(f'{token_}')
             # Decode and verify the token
             decoded_token = decode_token(token_)
-            logger.debug(f'{decoded_token}')
             if not decoded_token:
                 return jsonify({'error': 'Invalid token'}), 401
 
@@ -78,3 +77,19 @@ def authenticate(f):
             return jsonify({'error': 'Missing token'}), 401
 
     return decorated_function
+
+def authorize_role(roles):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            decoded_token = args[0]
+            user_role = decoded_token.get('role')
+
+            if user_role in roles:
+                return func(*args, **kwargs)
+            else:
+                return jsonify({'message': 'Unauthorized. Insufficient role permissions.'}), 403
+
+        return wrapper
+
+    return decorator
