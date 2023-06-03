@@ -11,6 +11,7 @@ To set up the project on your local machine, follow the instructions below.
 - Python installed on your system
 - MongoDB installed and running
 - Up and running Redis client
+- Docker installed and running on your system
 
 ### Installation
 
@@ -61,6 +62,66 @@ Activate the virtual environment:
 - Create a `.env` file from `.env.example` and set appropriate environment variables before running the project
 
 - Replace `<your-mongodb-uri>` with the connection URI for your MongoDB database. Set `<mqtt-broker-url>`, `<mqtt-username>`, and `<mqtt-password>` with the appropriate MQTT broker details.
+
+### Managing Eclipse MQTT Broker using Docker
+
+#### Prerequisites
+
+- Docker installed and running on your system
+
+#### Starting the MQTT Broker
+
+1. Build and start the Docker container with the provided docker-compose.yml file:
+
+    ```
+    docker-compose -f broker/docker-compose.yml up -d
+    ```
+
+   This command starts the MQTT broker container and maps port 1883 (unencrypted) and 8883 (encrypted).
+
+   The default username is `mosquitto`, the default password is `mosquitto`
+
+#### Configuring the MQTT Broker
+
+1. To configure the MQTT broker, update the configuration file located at `broker/config/mosquitto.conf` with the desired settings.
+
+2. The folder `broker/keys` contains the certificates and a script for generating the certificates. 
+To generate the certificates execute the following command in the `broker/keys` directory
+    ```
+    bash make_keys.sh
+    ```
+
+3. Start the MQTT broker container with the updated configuration:
+
+    ```
+    docker-compose -f broker/docker-compose.yml up -d
+    ```
+   Or navigate to broker/ 
+
+    ```
+    docker compose up -d
+    ```
+
+#### Updating MQTT Broker Credentials
+
+1. To change the broker username and password
+    ```
+     docker-compose exec mosquitto mosquitto_passwd -c /broker/config/mosquitto.passwd <username>
+    ```
+    replace the variable `<username>` with a new username. Then enter the password twice.
+
+2. Restart the MQTT broker container for the changes to take effect:
+
+    ```
+    docker-compose -f broker/docker-compose.yml restart
+    ```
+
+#### Stopping the MQTT Broker
+
+To stop the MQTT broker container, use the following command:
+    ```
+    docker-compose -f broker/docker-compose.yml down
+    ```
 
 ### Starting the Server
 

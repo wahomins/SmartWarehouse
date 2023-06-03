@@ -2,6 +2,7 @@ from app import create_app
 from flask import jsonify, request
 from app.core.tasks import seed_task
 from app.dbSeed import run_seed
+from app import mqtt_init
 app = create_app()
 
 
@@ -44,7 +45,7 @@ def handle_not_found_error(e):
 
 @app.errorhandler(405)
 def handle_not_found_error(e):
-    # Return a JSON response for 404 errors
+    # Return a JSON response for 405 errors
     response = {
         'message': 'Method not allowed for this route',
     }
@@ -72,4 +73,5 @@ def seed():
 
 
 if __name__ == '__main__':
+    mqtt_init.init_mqtt()  # Call the init_mqtt function
     app.run()
