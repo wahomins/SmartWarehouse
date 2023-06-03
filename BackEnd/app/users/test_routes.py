@@ -1,68 +1,56 @@
 import json
 import pytest
 from app import create_app
-from werkzeug.local import LocalProxy
+import random
+import string
 
 
-logger = LocalProxy(lambda: current_app.logger)
-
-
-@pytest.fixture
+@pytest.fixture(scope='module')
 def app():
     app = create_app()
     app.config['TESTING'] = True
-    client = app.test_client()
-    with app.app_context():
+    yield app
+
+
+@pytest.fixture(scope='module')
+def client(app):
+    with app.test_client() as client:
         yield client
 
-# @pytest.fixture(scope='function')
-# def registered_user(app):
-#     with app.test_client() as client:
-#         response = client.post('/api/users', json={
-#             'username': 'testuser',
-#             'password': 'testpassword',
-#             'email': 'test@example.com',
-#             'full_name': 'Test User',
-#             'role': 'user'
-#         })
-
-#         # Assert that the response is as expected for a successful registration
-#         assert response.status_code == 201
-#         # Add more assertions to validate the response data
-
-#         # Return the created user for further testing
-#         return response.json['user']
+@pytest.fixture(scope='function')
+def new_user():
+    letters = string.ascii_letters
+    name = ''.join(random.choice(letters) for _ in range(4))
+    return {
+            'username': f'testuser1-{name}',
+            'password': 'testP@ssword1',
+            'email': f'test@example{name}.com',
+            'full_name': 'Test User',
+            'role': 'user'
+        }
 
 
 @pytest.fixture(scope='function')
-def registered_user(app):
-    with app as client:
-        response = client.post('/api/users', json={
-            'username': 'testuser',
-            'password': 'testpassword',
-            'email': 'test@example.com',
-            'full_name': 'Test User',
-            'role': 'user'
-        }, follow_redirects=True)
-
-        assert response.status_code == 200
+def registered_user(client, new_user):
+        response = client.post('/api/users', json=new_user, follow_redirects=True)
+        print(f'Test users {response}')
+        assert response.status_code == 201
         response_data = response.get_json()
-        assert 'user' in response_data
+        assert 'user_id' in response_data
         # Add more assertions to validate the response data
 
-        return response_data['user']
+        return response_data['user_id']
 
 
-def test_login(app):
+def test_login(client, registered_user, new_user):
     # Prepare the test data
     data = {
-        'username': 'testuser',
-        'password': 'testpassword'
+        'username': new_user['username'],
+        'password': new_user['password']
     }
-    # logger.debug(f'Running Login Test: {data}')
 
     # Send a POST request to the /login route
-    response = app.post('/api/users/login', json=data)
+    response = client.post('/api/users/login', json=data)
 
     # Check the response status code
     assert response.status_code == 200
@@ -75,23 +63,7 @@ def test_login(app):
     assert 'full_name' in response_data
 
 
-def test_login_successful(app, registered_user):
-    # logger.debug(f'Running Login Test Successful: {registered_user}')
-
-    with app as client:
-        response = client.post('/api/users/login', json={
-            'username': registered_user['username'],
-            'password': 'testpassword'
-        }, follow_redirects=True)
-
-        # Assert that the response is as expected for a successful login
-        assert response.status_code == 200
-        # Add more assertions to validate the response data
-
-
-def test_login_invalid_credentials(app):
-    # logger.debug(f'Running Login Test INalid Creds: ')
-    with app as client:
+def test_login_invalid_credentials(client):
         response = client.post('/api/users/login', json={
             'username': 'testuser',
             'password': 'wrongpassword'

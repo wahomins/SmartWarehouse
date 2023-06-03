@@ -2,6 +2,9 @@ from app import create_app
 from flask import jsonify, request
 from app.core.tasks import seed_task
 from app.dbSeed import run_seed
+from mongoengine.errors import NotUniqueError
+import re
+# from app.mqtt.start import init_mqtt
 app = create_app()
 
 
@@ -20,6 +23,20 @@ def log_response_data(response):
 
     return response
 
+@app.errorhandler(NotUniqueError)
+def handle_not_unique_error(e):
+    error_message = str(e)
+    key_pattern = r"(\w+): \"(.*?)\""
+    keys = re.findall(key_pattern, error_message)
+    key_names = list(set(key[0] for key in keys))
+    key_values = list(set(key[1] for key in keys))
+    response = {
+        'error': 'NotUniqueError',
+        'message': 'Duplicate entry',
+        'duplicate_keys': key_names,
+        'duplicate_values': key_values
+    }
+    return jsonify(response), 400
 
 @app.errorhandler(Exception)
 def handle_internal_error(e):
@@ -44,7 +61,7 @@ def handle_not_found_error(e):
 
 @app.errorhandler(405)
 def handle_not_found_error(e):
-    # Return a JSON response for 404 errors
+    # Return a JSON response for 405 errors
     response = {
         'message': 'Method not allowed for this route',
     }
@@ -72,4 +89,5 @@ def seed():
 
 
 if __name__ == '__main__':
+    # init_mqtt()  # Call the init_mqtt function
     app.run()

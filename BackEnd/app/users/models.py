@@ -96,6 +96,8 @@ class UserModel:
             # Check if the decrypted password matches the provided password
             if user_data.get('password') == password:
                 return user_data
+            else:
+                return None
         else:
             return None
 

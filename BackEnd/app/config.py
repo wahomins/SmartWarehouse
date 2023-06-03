@@ -22,7 +22,8 @@ class BaseConfig(object):
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     LOG_INFO_FILE = path.join(basedir, 'log', f'{current_date}-INFO.log')
     LOG_CELERY_FILE = path.join(basedir, 'log', f'{current_date}-celery.log')
-    MONGODB_URI = environ.get('MONGODB_URI')
+    MONGODB_URI = environ.get('MONGODB_URI')    
+    MONGODB_URI_FULL= environ.get('MONGODB_URI_FULL')
     MONGODB_NAME = environ.get(
         'MONGOTESTDB_NAME') if APPLICATION_ENV == 'staging' else environ.get('MONGODB_NAME')
     MONGOTESTDB_NAME = environ.get('MONGOTESTDB_NAME')
