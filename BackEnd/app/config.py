@@ -23,9 +23,9 @@ class BaseConfig(object):
     LOG_INFO_FILE = path.join(basedir, 'log', f'{current_date}-INFO.log')
     LOG_CELERY_FILE = path.join(basedir, 'log', f'{current_date}-celery.log')
     MONGODB_URI = environ.get('MONGODB_URI')    
-    MONGODB_URI_FULL= environ.get('MONGODB_URI_FULL')
+    MONGODB_URI_FULL= environ.get('MONGODB_TEST_URI_FULL') if APPLICATION_ENV == 'test' else environ.get('MONGODB_URI_FULL')
     MONGODB_NAME = environ.get(
-        'MONGOTESTDB_NAME') if APPLICATION_ENV == 'staging' else environ.get('MONGODB_NAME')
+        'MONGOTESTDB_NAME') if APPLICATION_ENV == 'test' else environ.get('MONGODB_NAME')
     MONGOTESTDB_NAME = environ.get('MONGOTESTDB_NAME')
     MQTT_BROKER = environ.get('MQTT_BROKER')
     MQTT_USERNAME = environ.get('MQTT_USERNAME')
@@ -99,10 +99,17 @@ class Production(BaseConfig):
     ENV = 'production'
 
 
+class Test(BaseConfig):
+    ''' Tets config. '''
+
+    DEBUG = True
+    ENV = 'test'
+
 config = {
     'development': Development,
     'staging': Staging,
     'production': Production,
+    'test': Test,
 }
 
 # Determine the environment based on the current settings

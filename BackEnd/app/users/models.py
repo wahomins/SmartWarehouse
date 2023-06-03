@@ -1,10 +1,15 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
+from pymongo.errors import OperationFailure
 from bson.binary import Binary
 from bson.objectid import ObjectId
+from werkzeug.local import LocalProxy
+from flask import current_app
 from cryptography.fernet import Fernet
 import base64
 from app.config import app_config
 
+
+logger = LocalProxy(lambda: current_app.logger)
 
 class UserModel:
     def __init__(self):
@@ -19,6 +24,12 @@ class UserModel:
         encryption_key = app_config.ENCRYPTION_KEY
 
         self.fernet = Fernet(base64.urlsafe_b64decode(encryption_key))
+        
+               # Create a unique index for name and warehouse_id
+        try:
+            self.users_collection.create_index('email', unique=True)
+        except OperationFailure as e:
+            logger.error(f"Failed to create unique index: {str(e)}")
 
     def create_user(self, user_data):
         # Encrypt password and full name before storing in MongoDB

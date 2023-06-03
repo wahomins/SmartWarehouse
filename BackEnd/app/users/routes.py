@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.local import LocalProxy
 from flask_pydantic import validate
-from .validations import CreateUserModel, UpdateUserModel, LoginModel
+from .validations import CreateUserModel, UpdateUserModel, LoginModel, AddUserModel
 from .models import UserModel
 from app.utils.auth import generate_token, authenticate
 import json
@@ -16,12 +16,51 @@ user_model = UserModel()
 @validate(body=CreateUserModel)
 def create_user():
     data = request.json
-    data['created_on'] = f'{datetime.now()}'
+
+    # Check if email already exists
+    existing_user = user_model.get_user_by_username(data['email'])
+    if existing_user:
+        return jsonify({'message': 'Email already exists'}), 409
+
+    # Set username if empty
+    if not data.get('username'):
+        username = data['email'].split('@')[0]
+        data['created_on'] = f'{datetime.now()}'
+        data['username'] = username
 
     user_id = user_model.create_user(data)
 
     return jsonify({'message': 'User created successfully', 'user_id': str(user_id)}), 201
 
+@user_bp.route('/add_user', methods=['POST'])
+@authenticate
+@validate(body=AddUserModel)
+def add_user(decoded_token):
+    data = request.json
+
+    # Check if email already exists
+    email = data.get('email')
+    existing_user = user_model.get_user_by_username(email)
+    if existing_user:
+        return jsonify({'error': 'Email already exists'}), 400
+
+    # If username is empty, set it to the left part of the email before '@'
+    username = data.get('username')
+    if not username:
+        username = email.split('@')[0]
+
+    # Generate password
+    password = username.upper() + '@123'
+
+    # Add the generated password to the data
+    data['password'] = password
+    data['created_on'] = datetime.now()
+    data['created_by'] = decoded_token['user_id']
+
+    # Create the user
+    user_id = user_model.create_user(data)
+
+    return jsonify({'message': 'User created successfully', 'user_id': str(user_id)}), 201
 
 @user_bp.route('/<user_id>', methods=['PUT'])
 @authenticate
@@ -88,7 +127,7 @@ def get_all_users():
 
 @user_bp.route('/<user_id>', methods=['GET'])
 @authenticate
-def get_user(user_id):
+def get_user(decoded_token, user_id):
     # Get a user by their ID from the UserModel
     user = user_model.get_user_by_id(user_id)
 

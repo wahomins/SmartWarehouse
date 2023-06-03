@@ -1,8 +1,9 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 from bson.objectid import ObjectId
 from flask import current_app
 from cryptography.fernet import Fernet
 from werkzeug.local import LocalProxy
+from pymongo.errors import OperationFailure
 import base64
 import random
 import string
@@ -23,6 +24,12 @@ class DeviceModel:
         encryption_key = app_config.ENCRYPTION_KEY
 
         self.fernet = Fernet(base64.urlsafe_b64decode(encryption_key))
+
+               # Create a unique index for name and warehouse_id
+        try:
+            self.devices_collection.create_index([('name', ASCENDING), ('warehouse_id', ASCENDING)], unique=True)
+        except OperationFailure as e:
+            logger.error(f"Failed to create unique index: {str(e)}")
 
     def create_device(self, device_data):
         # Generate a random secret for the device
@@ -51,6 +58,11 @@ class DeviceModel:
         # Retrieve a device by its ID from the MongoDB collection
         device = self.devices_collection.find_one({"_id": ObjectId(device_id)})
         return device
+    
+    
+    def get_device_by_name(self, device_name):
+        # Retrieve a device by its ID from the MongoDB collection
+        device = self.devices_collection.find_one({"name": device_name})
 
     def get_device_by_id_and_secret(self, device_id, secret):
         # Retrieve a device by its ID and secret from the MongoDB collection
