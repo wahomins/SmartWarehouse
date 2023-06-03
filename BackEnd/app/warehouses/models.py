@@ -1,9 +1,11 @@
 from datetime import datetime
 from bson.objectid import ObjectId
 from flask import current_app
+from werkzeug.local import LocalProxy
 from app import db
 from app.config import app_config
 
+logger = LocalProxy(lambda: current_app.logger)
 
 class Warehouse(db.DynamicDocument):
     name = db.StringField(required=True)
@@ -49,12 +51,25 @@ def create_warehouse(data):
     return format_response(warehouse)
 
 
-def update_warehouse(warehouse, data):
+# def update_warehouse(warehouse_id, data):
+#     warehouse = Warehouse.objects.get(id=ObjectId(warehouse_id))
+#     logger.debug(f"warehouseData {warehouse}")
+
+#     for key, value in data.items():
+#         if key in warehouse:
+#             setattr(warehouse, key, value)
+#         else:
+#             warehouse[key] = value
+
+#     warehouse.save()
+#     return format_response(warehouse)
+
+def update_warehouse(warehouse_id, data):
+    warehouse = Warehouse.objects.get(id=ObjectId(warehouse_id))
     for key, value in data.items():
         setattr(warehouse, key, value)
     warehouse.save()
     return format_response(warehouse)
-
 
 def delete_warehouse(warehouse_id):
     try:

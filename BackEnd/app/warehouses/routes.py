@@ -44,7 +44,7 @@ def create_warehouse_route(decoded_token):
     data = request.json
     data['created_by'] = decoded_token['user_id']
     warehouse = create_warehouse(data)
-    return jsonify(warehouse), 200
+    return jsonify(warehouse), 201
 
 @warehouses_bp.route('/<warehouse_id>', methods=['PUT'])
 @authenticate
@@ -55,7 +55,7 @@ def update_warehouse_route(decoded_token, warehouse_id):
     data['updated_by'] = decoded_token['user_id']
     warehouse = get_warehouse_by_id(warehouse_id)
     if warehouse:
-        warehouse = update_warehouse(warehouse, data)
+        warehouse = update_warehouse(warehouse_id, data)
         return jsonify(warehouse), 200
     else:
         return jsonify({'message': 'Warehouse not found'}), 404

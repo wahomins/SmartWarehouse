@@ -2,6 +2,13 @@ import pytest
 from flask import json
 from app import create_app
 from bson.objectid import ObjectId
+from werkzeug.local import LocalProxy
+from flask import current_app
+import random
+import string
+
+
+logger = LocalProxy(lambda: current_app.logger)
 
 @pytest.fixture(scope='module')
 def app():
@@ -15,31 +22,33 @@ def client(app):
     with app.test_client() as client:
         yield client
 
+
 @pytest.fixture(scope='function')
 def warehouse_user():
+    letters = string.ascii_letters
+    name = ''.join(random.choice(letters) for _ in range(4))
     return {
-            'username': 'testuser_warehouses',
+            'username': f'testuser_warehouses {name}',
             'password': 'testP@ssword1',
-            'email': 'test_warehouses@example.com',
+            'email': f'test_warehouses{name}@example.com',
             'full_name': 'Test User',
             'role': 'admin'
         }
 
 
 @pytest.fixture(scope='function')
-def registered_user(app, warehouse_user):
-    with app as client:
-        response = client.post('/api/users', json=warehouse_user, follow_redirects=True)
+def registered_user(client, warehouse_user):
+    response = client.post('/api/users', json= warehouse_user, follow_redirects=True)
 
-        assert response.status_code == 200
-        response_data = response.get_json()
-        assert 'user' in response_data
+    assert response.status_code == 201
+    response_data = response.get_json()
+    assert 'user_id' in response_data
 
-        return response_data['user']
+    return response_data['user_id']
 
 
 @pytest.fixture(scope='function')
-def access_token(client, warehouse_user):
+def access_token(client, registered_user, warehouse_user):
     login_payload = {
         "username": warehouse_user['username'],
         "password": warehouse_user['password']
@@ -47,14 +56,17 @@ def access_token(client, warehouse_user):
 
     response = client.post('/api/users/login', json=login_payload)
     assert response.status_code == 200
-
-    return json.loads(response.data)['token']
+    response_data = response.get_json()
+    return response_data
 
 
 @pytest.fixture(scope='function')
 def warehouse_data():
+    
+    letters = string.ascii_letters
+    name = ''.join(random.choice(letters) for _ in range(4))
     return {
-        'name': 'Warehouse A',
+        'name': f'Warehouse {name}',
         'latitude': 51.1234,
         'longitude': 0.5678,
         'close_land_mark': 'ABC',
@@ -66,63 +78,84 @@ def warehouse_data():
 
 
 @pytest.fixture(scope='function')
-def create_warehouse(client, warehouse_data, authenticated_user):
-    warehouse_data['created_by'] = authenticated_user['user_id']
+def create_warehouse(client, warehouse_data, access_token):
+    warehouse_data['created_by'] = access_token['user_id']
+    warehouse_data['manager_id'] = access_token['user_id']
+    jwt = access_token['token']
     response = client.post(
         '/api/warehouses/',
         json=warehouse_data,
-        headers={'Authorization': authenticated_user['token']}
+        headers={'Authorization':  f'Bearer {jwt}'}
     )
-    return response
+    print(response)
+    assert response.status_code == 201
+    response_data = response.get_json()
+    assert '_id' in response_data
+    return response_data
 
+# def test_registered_user(client, warehouse_user):
+#         response = client.post('/api/users', json= {
+#             'username': 'testuser_warehouses',
+#             'password': 'testP@ssword1',
+#             'email': 'test_warehouses@example.com',
+#             'full_name': 'Test User',
+#             'role': 'admin'
+#         }, follow_redirects=True)
 
-@pytest.fixture(scope='function')
-def update_warehouse(client, create_warehouse, authenticated_user):
-    warehouse_id = create_warehouse.json['_id']
-    response = client.put(
-        f'/api/warehouses/{warehouse_id}',
-        json={'name': 'Updated Warehouse'},
-        headers={'Authorization': authenticated_user['token']}
-    )
-    return response
+#         assert response.status_code == 201
+#         response_data = response.get_json()
+#         assert 'user_id' in response_data
 
+#         return response_data['user_id']
 
-def test_get_warehouses(client, authenticated_user):
+def test_get_warehouses(client, access_token):
+    jwt = access_token['token']
     response = client.get(
         '/api/warehouses/',
-        headers={'Authorization': authenticated_user['token']}
+        headers={'Authorization':  f'Bearer {jwt}'}
     )
     assert response.status_code == 200
 
 
-def test_create_warehouse(create_warehouse):
-    assert create_warehouse.status_code == 201
-    assert 'name' in create_warehouse.json
-    assert create_warehouse.json['name'] == 'Warehouse A'
+def test_create_warehouse(create_warehouse, warehouse_data):
+    assert 'name' in create_warehouse
+    assert create_warehouse['name'] == warehouse_data['name']
 
 
-def test_get_warehouse(client, create_warehouse, authenticated_user):
-    warehouse_id = create_warehouse.json['_id']
+def test_get_warehouse(client, create_warehouse, access_token, warehouse_data):
+    warehouse_id = create_warehouse['_id']    
+    jwt = access_token['token']
     response = client.get(
         f'/api/warehouses/{warehouse_id}',
-        headers={'Authorization': authenticated_user['token']}
+        headers={'Authorization':  f'Bearer {jwt}'}
     )
     assert response.status_code == 200
-    assert 'name' in response.json
-    assert response.json['name'] == 'Warehouse A'
+    response_data = response.get_json()
+    assert 'name' in response_data
+    assert response_data['name'] == warehouse_data['name']
+
+def test_update_warehouse(client, create_warehouse, access_token):
+    warehouse_id = create_warehouse['_id']
+    letters = string.ascii_letters
+    name = ''.join(random.choice(letters) for _ in range(4))
+    jwt = access_token['token']
+    response = client.put(
+        f'/api/warehouses/{warehouse_id}',
+        json={'name': f'Updated Warehouse-{name}'},
+        headers={'Authorization':  f'Bearer {jwt}'}
+    )
+    assert response.status_code == 200
+    response_data = response.get_json()
+    assert 'name' in response_data
+    assert response_data['name'] == f'Updated Warehouse-{name}'
 
 
-def test_update_warehouse(update_warehouse):
-    assert update_warehouse.status_code == 200
-    assert 'name' in update_warehouse.json
-    assert update_warehouse.json['name'] == 'Updated Warehouse'
-
-
-def test_delete_warehouse(client, create_warehouse, authenticated_user):
-    warehouse_id = create_warehouse.json['_id']
+def test_delete_warehouse(client, create_warehouse, access_token):
+    warehouse_id = create_warehouse['_id']
+    jwt = access_token['token']
     response = client.delete(
         f'/api/warehouses/{warehouse_id}',
-        headers={'Authorization': authenticated_user['token']}
+        headers={'Authorization':  f'Bearer {jwt}'}
     )
     assert response.status_code == 200
     assert response.json['message']

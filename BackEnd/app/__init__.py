@@ -28,7 +28,8 @@ def create_app():
     app.json_encoder = CustomJSONEncoder
     app.config['MONGODB_SETTINGS'] = {
         'db': configs[APPLICATION_ENV].MONGODB_NAME,
-        'host': f'{configs[APPLICATION_ENV].MONGODB_URI_FULL}'
+        'host': f'{configs[APPLICATION_ENV].MONGODB_URI_FULL}',
+        'uuidRepresentation': 'standard'
     }
     app.config['MONGODB_ALIAS'] = {
         'test': configs[APPLICATION_ENV].MONGODB_NAME,
