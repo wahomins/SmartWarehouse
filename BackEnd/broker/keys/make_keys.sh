@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Relative Distinguished Names (RDNs).
 # - CN: Common Name
 # - OU: Organizational Unit
@@ -7,24 +6,41 @@
 # - L: Locality
 # - S: State Or Province Name
 # - C: Country Name
+# Read the configuration file
+CONFIG_FILE="config.ini"
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
+
+COMMON_NAME="${COMMON_NAME:-}"
 
 # check which operating system (only macOS or linux)
-if [[ "$OSTYPE" =~ ^darwin ]]; then
-    COMMON_NAME=$(scutil --get ComputerName)
-fi
+# Set the common name based on the OS if missing config
+# if [[ -z "$COMMON_NAME" ]]; then
+#     if [[ "$OSTYPE" =~ ^darwin ]]; then
+#         COMMON_NAME=$(scutil --get ComputerName)
+#     elif [[ "$OSTYPE" =~ ^linux ]]; then
+#         # Get the system's IP address
+#         COMMON_NAME=$(hostname -I | awk '{print $1}')
+#     fi
+# fi
 
-if [[ "$OSTYPE" =~ ^linux ]]; then
-    COMMON_NAME=$(hostname)
-fi
+# if [[ "$OSTYPE" =~ ^darwin ]]; then
+#     COMMON_NAME=$(scutil --get ComputerName)
+# fi
 
-echo ${COMMON_NAME}
+# if [[ "$OSTYPE" =~ ^linux ]]; then
+#     COMMON_NAME=$(hostname)
+# fi
+
+
+echo "HOSTNAME IS:- ${COMMON_NAME}"
 
 SUBJECT_CA="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=CA/CN=$COMMON_NAME"
 SUBJECT_SERVER="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=Server/CN=$COMMON_NAME"
 SUBJECT_CLIENT="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=Client/CN=$COMMON_NAME"
-
-function generate_CA ()
-{
+function generate_CA () {
   echo "$SUBJECT_CA"
   openssl req -x509 -nodes -sha256 -newkey rsa:2048 -subj "$SUBJECT_CA" -days 365 -keyout ca.key -out ca.crt
 }

@@ -4,7 +4,7 @@ from app.core.tasks import seed_task
 from app.dbSeed import run_seed
 from mongoengine.errors import NotUniqueError
 import re
-# from app.mqtt.start import init_mqtt
+from app.mqtt.start import init_mqtt
 app = create_app()
 
 
@@ -89,5 +89,5 @@ def seed():
 
 
 if __name__ == '__main__':
-    # init_mqtt()  # Call the init_mqtt function
+    init_mqtt()  # Call the init_mqtt function
     app.run()

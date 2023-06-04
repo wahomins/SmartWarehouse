@@ -28,6 +28,7 @@ class BaseConfig(object):
         'MONGOTESTDB_NAME') if APPLICATION_ENV == 'test' else environ.get('MONGODB_NAME')
     MONGOTESTDB_NAME = environ.get('MONGOTESTDB_NAME')
     MQTT_BROKER = environ.get('MQTT_BROKER')
+    MQTT_BROKER_PORT = environ.get('MQTT_BROKER_PORT')
     MQTT_USERNAME = environ.get('MQTT_USERNAME')
     MQTT_PASSWORD = environ.get('MQTT_PASSWORD')
     PORT = environ.get('PORT')

@@ -1,6 +1,8 @@
 
 from bson import ObjectId
 import json
+from datetime import datetime
+from mongoengine import Document, QuerySet
 
 
 # Custom JSON encoder to handle ObjectId serialization
@@ -10,12 +12,28 @@ class CustomJSONEncoder(json.JSONEncoder):
             return str(obj)
         return super().default(obj)
 
-def formart_mongo_response(result):
-    updated_data = {}
-    # Convert bytes to string and then to dictionary
-    for key, value in result.items():
-        if isinstance(value, bytes):
-            updated_data[key] = value.decode('utf-8')
+def format_mongo_response(doc):
+    def format_field_value(field_value):
+        if isinstance(field_value, ObjectId):
+            return str(field_value)
+        elif isinstance(field_value, datetime):
+            return field_value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         else:
-            updated_data[key] = value
-    return updated_data
+            return field_value
+    if doc is None:
+        return None
+    elif isinstance(doc, QuerySet):
+        formatted_list = []
+        for document in doc:
+            formatted_dict = {field_name: format_field_value(field_value)
+                              for field_name, field_value in document.to_mongo().items()}
+            formatted_list.append(formatted_dict)
+        return formatted_list
+    elif isinstance(doc, Document):
+        formatted_dict = {field_name: format_field_value(field_value)
+                          for field_name, field_value in doc.to_mongo().items()}
+        return formatted_dict
+    else:
+        formatted_dict = {field_name: format_field_value(field_value)
+                          for field_name, field_value in doc.to_mongo().items()}
+        return formatted_dict

@@ -11,6 +11,7 @@ from flask_mongoengine import MongoEngine
 from .config import config as configs
 from .config import app_config
 from .utils.utils import CustomJSONEncoder
+from .core.preloader import db_preload_documents
 
 
 celery = Celery(__name__)
@@ -47,6 +48,8 @@ def create_app():
     # celery is not able to pick result_backend and hence using update
     celery.conf.update(result_backend=app.config['RESULT_BACKEND'])
 
+    # preload required data to the db
+    db_preload_documents()
     # ROUTES
     from .core.views import core as core_blueprint
     from .users.routes import user_bp as user_blueprint

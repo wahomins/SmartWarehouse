@@ -48,7 +48,7 @@ def create_warehouse_route(decoded_token):
 
 @warehouses_bp.route('/<warehouse_id>', methods=['PUT'])
 @authenticate
-@authorize_role(['admin'])  # Check if user has 'admin' role
+@authorize_role(['admin', 'manager'])  # Check if user has 'admin' role
 @validate(body=UpdateWarehouseModel)
 def update_warehouse_route(decoded_token, warehouse_id):
     data = request.json

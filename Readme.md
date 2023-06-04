@@ -58,7 +58,7 @@ Activate the virtual environment:
     ```
 
 ### Configuration
-- There are 3 configurations `development`, `staging` and `production` in `config.py`. Default is `development`
+- There are 4 configurations `development`, `test`, `staging` and `production` in `config.py`. Default is `development`
 - Create a `.env` file from `.env.example` and set appropriate environment variables before running the project
 
 - Replace `<your-mongodb-uri>` with the connection URI for your MongoDB database. Set `<mqtt-broker-url>`, `<mqtt-username>`, and `<mqtt-password>` with the appropriate MQTT broker details.
@@ -69,23 +69,12 @@ Activate the virtual environment:
 
 - Docker installed and running on your system
 
-#### Starting the MQTT Broker
-
-1. Build and start the Docker container with the provided docker-compose.yml file:
-
-    ```
-    docker-compose -f broker/docker-compose.yml up -d
-    ```
-
-   This command starts the MQTT broker container and maps port 1883 (unencrypted) and 8883 (encrypted).
-
-   The default username is `mosquitto`, the default password is `mosquitto`
-
 #### Configuring the MQTT Broker
 
 1. To configure the MQTT broker, update the configuration file located at `broker/config/mosquitto.conf` with the desired settings.
 
 2. The folder `broker/keys` contains the certificates and a script for generating the certificates. 
+There is a `config.ini` file with setting `COMMON_NAME` for mqtt host name keys setting, the default is `localhost`
 To generate the certificates execute the following command in the `broker/keys` directory
     ```
     bash make_keys.sh
@@ -116,12 +105,31 @@ To generate the certificates execute the following command in the `broker/keys` 
     docker-compose -f broker/docker-compose.yml restart
     ```
 
+
+#### Starting the MQTT Broker
+
+1. Build and start the Docker container with the provided docker-compose.yml file:
+
+    ```
+    docker-compose -f broker/docker-compose.yml up -d
+    ```
+
+   This command starts the MQTT broker container and maps port 1883 (unencrypted) and 8883 (encrypted).
+
+   The default username is `mosquitto`, the default password is `mosquitto`
+
 #### Stopping the MQTT Broker
 
 To stop the MQTT broker container, use the following command:
     ```
     docker-compose -f broker/docker-compose.yml down
     ```
+
+#### Configuring the MQTT Client
+
+1. From the keys the generated on broker config,`ca.cert`,`client.crt` and `client.key`, copy the files to the `app/mqtt/certs` directory.
+
+2. Change the configs for the broker connection in the .env file
 
 ### Starting the Server
 

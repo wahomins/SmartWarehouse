@@ -3,7 +3,7 @@ from werkzeug.local import LocalProxy
 from flask_pydantic import validate
 from .validations import CreateUserModel, UpdateUserModel, LoginModel, AddUserModel
 from .models import UserModel
-from app.utils.auth import generate_token, authenticate
+from app.utils.auth import generate_token, authenticate, authorize_role
 import json
 from datetime import datetime
 
@@ -34,6 +34,7 @@ def create_user():
 
 @user_bp.route('/add_user', methods=['POST'])
 @authenticate
+@authorize_role(['admin', 'manager'])  # Check if user has 'admin' role
 @validate(body=AddUserModel)
 def add_user(decoded_token):
     data = request.json

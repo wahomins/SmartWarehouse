@@ -4,9 +4,9 @@ from flask_pydantic import validate
 from .validations import CreateDeviceModel, UpdateDeviceModel, AuthModel
 from .models import DeviceModel
 from app.utils.auth import authenticate, generate_device_token
-from app.utils.utils import formart_mongo_response
 from datetime import datetime
-
+from .DeviceGroups.device_groups_models import get_device_group_by_name, get_device_group_by_id, fetch_device_groups
+from .DeviceGroups.device_sub_groups_models import get_device_subgroup_by_id, get_device_subgroups_by_group_id, get_device_subgroup_by_name
 
 device_bp = Blueprint('device', __name__)
 device_model = DeviceModel()
@@ -118,3 +118,48 @@ def update_device_secret(decoded_token, device_id):
         return jsonify({'message': 'Device updated successfully'}), 200
     else:
         return jsonify({'error': 'Device not found'}), 404
+
+
+@device_bp.route('/group/<group_name>', methods=['GET'])
+def get_device_group_by_name(group_name):
+    # Retrieve a device group by its name
+    device_group = get_device_group_by_name(group_name)
+    if device_group:
+        return jsonify(device_group)
+    return jsonify({'error': 'Device group not found'}), 404
+
+@device_bp.route('/groups/', methods=['GET'])
+def get_all_device_groups():
+    # Retrieve all device groups
+    device_groups = fetch_device_groups()
+    return jsonify(device_groups)
+
+@device_bp.route('/groups/<group_id>/', methods=['GET'])
+def get_device_group_by_id_route(group_id):
+    # Retrieve a device group by its ID
+    device_group = get_device_group_by_id(group_id)
+    if device_group:
+        return jsonify(device_group)
+    return jsonify({'error': 'Device group not found'}), 404
+
+@device_bp.route('/subgroup/<subgroup_id>/', methods=['GET'])
+def get_device_subgroup_by_id_route(subgroup_id):
+    # Retrieve a device subgroup by its ID
+    device_subgroup = get_device_subgroup_by_id(subgroup_id)
+    if device_subgroup:
+        return jsonify(device_subgroup)
+    return jsonify({'error': 'Device subgroup not found'}), 404
+
+@device_bp.route('/subgroup/group/<group_id>/', methods=['GET'])
+def get_device_subgroups_by_group_id_route(group_id):
+    # Retrieve all device subgroups of a specific device group
+    device_subgroups = get_device_subgroups_by_group_id(group_id)
+    return jsonify(device_subgroups)
+
+@device_bp.route('/subgroup/<subgroup_name>/', methods=['GET'])
+def get_device_subgroup_by_name_route(subgroup_name):
+    # Retrieve a device subgroup by its name
+    device_subgroup = get_device_subgroup_by_name(subgroup_name)
+    if device_subgroup:
+        return jsonify(device_subgroup)
+    return jsonify({'error': 'Device subgroup not found'}), 404

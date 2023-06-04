@@ -8,7 +8,24 @@ class CreateDeviceModel(BaseModel):
     mac_address: Optional[str]
     local_ip: Optional[str]
     warehouse_id: Optional[str]
-    topic: Optional[str]
+    device_group: Optional[str]
+    device_sub_group: Optional[str]
+    active: bool
+
+    class Config:
+        validate_assignment = True
+
+    @validator('active')
+    def set_param_active(cls):
+        return False
+    
+    @validator('device_group')
+    def set_param_group(cls, device_group):
+        return device_group or 'unknown'
+    
+    @validator('device_sub_group')
+    def set_param_sub_group(cls, device_group):
+        return device_group or 'unknown'
 
 
 class UpdateDeviceModel(BaseModel):
@@ -16,8 +33,8 @@ class UpdateDeviceModel(BaseModel):
     description: Optional[str]
     mac_address: Optional[str]
     local_ip: Optional[str]
+    device_group: Optional[str]
     warehouse_id: Optional[str]
-    topic: Optional[str]
 
 
 class AuthModel(BaseModel):
