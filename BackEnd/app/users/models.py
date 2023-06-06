@@ -7,7 +7,8 @@ from flask import current_app
 from cryptography.fernet import Fernet
 import base64
 from app.config import app_config
-
+from .user_access_log import UserAccessLog
+from app.utils.utils import format_mongo_response
 
 logger = LocalProxy(lambda: current_app.logger)
 
@@ -22,12 +23,14 @@ class UserModel:
 
         # Encryption key
         encryption_key = app_config.ENCRYPTION_KEY
-
-        self.fernet = Fernet(base64.urlsafe_b64decode(encryption_key))
+        # print(base64.urlsafe_b64decode(encryption_key), 'WW')
+        # self.fernet = Fernet(base64.urlsafe_b64decode(encryption_key))
+        self.fernet = Fernet(b'960WaV-GWbrJ2h-ZJK4UsF8K80--Id7MGXwcMwtiFKI=')
         
                # Create a unique index for name and warehouse_id
         try:
-            self.users_collection.create_index('email', unique=True)
+            self.users_collection.create_index([('email', ASCENDING)], unique=True)
+            self.users_collection.create_index([('card_number', ASCENDING)], unique=True)
         except OperationFailure as e:
             logger.error(f"Failed to create unique index: {str(e)}")
 
@@ -77,6 +80,21 @@ class UserModel:
             return user_data
         else:
             return None
+        
+    def get_user_by_card(self, card_number):
+        # Encrypt the card number
+        # encrypted_card = self.fernet.encrypt(card_number.encode())
+        # encrypted_card = self.fernet.decrypt(card_number.encode())
+        # Retrieve a user by their encrypted card number from the MongoDB collection
+        encrypted_user = self.users_collection.find_one({"card_number": card_number})
+        
+        if encrypted_user:
+            # Decrypt the user data before returning
+            user_data = self._decrypt_user_data(encrypted_user)
+            return user_data
+        else:
+            return None
+
 
     def get_all_users(self):
         # Retrieve all users from the MongoDB collection
@@ -102,7 +120,7 @@ class UserModel:
 
         if encrypted_user:
             # Decrypt the user data
-            user_data = self._decrypt_user_data(encrypted_user)
+            user_data = self._decrypt_user_data(encrypted_user, True)
 
             # Check if the decrypted password matches the provided password
             if user_data.get('password') == password:
@@ -124,11 +142,16 @@ class UserModel:
         if 'full_name' in encrypted_data:
             full_name = encrypted_data['full_name']
             encrypted_full_name = self.fernet.encrypt(full_name.encode())
-            encrypted_data['full_name'] = Binary(encrypted_full_name)
+            encrypted_data['full_name'] = Binary(encrypted_full_name)        
+        
+        # if 'card_number' in encrypted_data:
+        #     card_number = encrypted_data['card_number']
+        #     encrypted_card_number = self.fernet.encrypt(card_number.encode())
+        #     encrypted_data['card_number'] = Binary(encrypted_card_number)
 
         return encrypted_data
 
-    def _decrypt_user_data(self, encrypted_user):
+    def _decrypt_user_data(self, encrypted_user, retain_password = False):
         # Decrypt the password and full name fields in the user data retrieved from MongoDB
         decrypted_data = encrypted_user.copy()
 
@@ -141,5 +164,26 @@ class UserModel:
             encrypted_full_name = decrypted_data['full_name']
             decrypted_full_name = self.fernet.decrypt(encrypted_full_name).decode()
             decrypted_data['full_name'] = decrypted_full_name
+        
+        # if 'card_number' in decrypted_data:
+        #     encrypted_card_number = decrypted_data['card_number']
+        #     decrypted_card_number = self.fernet.decrypt(encrypted_card_number).decode()
+        #     decrypted_data['card_number'] = decrypted_card_number
 
+        if not retain_password:
+            decrypted_data.pop('password', None)
         return decrypted_data
+
+
+    def create_log(self, device_id, user_id, timestamp, status, meta=None):
+        access_log = UserAccessLog(device_id=device_id, user_id=user_id, timestamp=timestamp, status=status, meta_data=meta)
+        access_log.save()
+        return access_log
+
+    def logs_by_device_or_user_id(self, identifier):
+        access_logs = UserAccessLog.objects(device_id=identifier) | UserAccessLog.objects(user_id=identifier)
+        return format_mongo_response(access_logs)
+
+    def fetch_all_logs(self):
+        access_logs = UserAccessLog.objects()
+        return format_mongo_response(access_logs)

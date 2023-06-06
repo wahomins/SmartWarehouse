@@ -120,3 +120,4 @@ class DeviceModel:
             decrypted_data['secret'] = decrypted
 
         return decrypted_data
+    

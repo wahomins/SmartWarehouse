@@ -101,7 +101,7 @@ def login():
 
 @user_bp.route('/reset-password', methods=['POST'])
 @authenticate
-def reset_password():
+def reset_password(decode_token):
     data = request.json
 
     # Reset the user's password
@@ -115,7 +115,7 @@ def reset_password():
 
 @user_bp.route('/', methods=['GET'])
 @authenticate
-def get_all_users():
+def get_all_users(decode_token):
     # Get all users from the UserModel
     users = user_model.get_all_users()
 
@@ -139,8 +139,20 @@ def get_user(decoded_token, user_id):
     else:
         return jsonify({'error': 'User not found'}), 404
 
+@user_bp.route('/auth/<card_number>', methods=['GET'])
+@authenticate
+def get_user_by_card_number(decoded_token, card_number):
+    # Get a user by their ID from the UserModel
+    user = user_model.get_user_by_card(card_number)
 
-@user_bp.route('/users/<user_id>', methods=['DELETE'])
+    if user:
+        # Remove the password field from the user
+        user.pop('password', None)
+        return jsonify(user), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
+@user_bp.route('/<user_id>', methods=['DELETE'])
 @authenticate
 def delete_user(user_id):
     result = user_model.delete_user(user_id)
@@ -150,3 +162,15 @@ def delete_user(user_id):
     else:
         # User not found
         return jsonify({'error': 'User not found'}), 404
+    
+@user_bp.route('/logs/access', methods=['GET'])
+@authenticate
+def get_access_all_logs(decoded_token):
+    result = user_model.fetch_all_logs()
+    return jsonify(result)
+
+@user_bp.route('/logs/access/<user_id>/', methods=['GET'])
+@authenticate
+def get_access_logs_by_user_device_id(decoded_token, user_id):
+    result = user_model.logs_by_device_or_user_id(user_id)
+    return jsonify(result)

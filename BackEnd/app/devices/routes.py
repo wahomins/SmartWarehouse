@@ -7,6 +7,8 @@ from app.utils.auth import authenticate, generate_device_token
 from datetime import datetime
 from .DeviceGroups.device_groups_models import get_device_group_by_name, get_device_group_by_id, fetch_device_groups
 from .DeviceGroups.device_sub_groups_models import get_device_subgroup_by_id, get_device_subgroups_by_group_id, get_device_subgroup_by_name
+from .device_activity import DeviceActivityLog
+
 
 device_bp = Blueprint('device', __name__)
 device_model = DeviceModel()
@@ -25,7 +27,7 @@ def create_device(decoded_token):
     data['created_on'] = f'{datetime.now()}'
     device_id = device_model.create_device(data)
 
-    return jsonify({'message': 'Device created successfully', 'device_id': str(device_id), 'device_secret': device_secret}), 201
+    return jsonify({'message': 'Device created successfully', 'device_id': device_id, 'device_secret': device_secret}), 201
 
 
 @device_bp.route('/<device_id>', methods=['PUT'])
@@ -45,7 +47,7 @@ def update_device(decoded_token, device_id):
 
 @device_bp.route('/', methods=['GET'])
 @authenticate
-def get_all_devices():
+def get_all_devices(decoded_token):
     devices = device_model.get_all_devices()
 
     for device in devices:
@@ -163,3 +165,13 @@ def get_device_subgroup_by_name_route(subgroup_name):
     if device_subgroup:
         return jsonify(device_subgroup)
     return jsonify({'error': 'Device subgroup not found'}), 404
+
+@device_bp.route('/logs/activity/', methods=['GET'])
+def get_all_device_activity_logs():
+    activities = DeviceActivityLog.fetch_device_activities()
+    return jsonify(activities)
+
+@device_bp.route('/logs/activity/<device_id>/', methods=['GET'])
+def get_device_activity_logs(device_id):
+    activities = DeviceActivityLog.device_activities_by_device(device_id)
+    return jsonify(activities)

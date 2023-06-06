@@ -8,16 +8,17 @@ class CreateDeviceModel(BaseModel):
     mac_address: Optional[str]
     local_ip: Optional[str]
     warehouse_id: Optional[str]
+    output_device_id: Optional[str]
     device_group: Optional[str]
     device_sub_group: Optional[str]
-    active: bool
+    active: Optional[str]
 
     class Config:
         validate_assignment = True
 
     @validator('active')
     def set_param_active(cls):
-        return False
+        return "False"
     
     @validator('device_group')
     def set_param_group(cls, device_group):

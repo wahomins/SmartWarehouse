@@ -9,6 +9,8 @@ class CreateUserModel(BaseModel):
     role: str
     email: EmailStr
     warehouse_id: Optional[str]
+    card_number: Optional[str]
+    bio_data: Optional[str]
 
 
 class UpdateUserModel(BaseModel):

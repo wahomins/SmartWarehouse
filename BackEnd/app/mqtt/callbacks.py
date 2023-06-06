@@ -1,10 +1,12 @@
 from datetime import datetime as dt
 from paho.mqtt.client import connack_string as ack
 import json
+from .handlers.main import handle_message
 
 def on_connect(client, userdata, flags, rc, v5config=None):    
     # Subscribe to the topics for each device TOHOST & TODEVICE topics
-    client.subscribe([('TO_HOST/#', 0), ('TO_DEVICE/#', 1), ('CLIENT_CONNECTIONS/#', 2)])
+    # client.subscribe([('TO_HOST/#', 0), ('TO_DEVICE/#', 1), ('CLIENT_CONNECTIONS/#', 2)])
+    client.subscribe([('TO_HOST/#', 0), ('CLIENT_CONNECTIONS/#', 2)])
     init_message = json.dumps({
         'name': 'server',
         'status': 'connected',
@@ -14,6 +16,7 @@ def on_connect(client, userdata, flags, rc, v5config=None):
     print(dt.now().strftime("%H:%M:%S.%f")[:-2] + " Connection returned result: "+ack(rc))
 
 def on_message(client, userdata, message,tmp=None):
+    handle_message(client=client, message=message, tmp=tmp)
     print(dt.now().strftime("%H:%M:%S.%f")[:-2] + " Received message " + str(message.payload) + " on topic '"
         + message.topic + "' with QoS " + str(message.qos))
 
