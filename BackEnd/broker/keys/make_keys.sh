@@ -14,6 +14,7 @@ fi
 
 
 COMMON_NAME="${COMMON_NAME:-}"
+# COMMON_NAME=""
 
 # check which operating system (only macOS or linux)
 # Set the common name based on the OS if missing config
@@ -40,6 +41,7 @@ echo "HOSTNAME IS:- ${COMMON_NAME}"
 SUBJECT_CA="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=CA/CN=$COMMON_NAME"
 SUBJECT_SERVER="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=Server/CN=$COMMON_NAME"
 SUBJECT_CLIENT="/C=KE/ST=Nairobi/L=Nairobi/O=Safaricom/OU=Client/CN=$COMMON_NAME"
+
 function generate_CA () {
   echo "$SUBJECT_CA"
   openssl req -x509 -nodes -sha256 -newkey rsa:2048 -subj "$SUBJECT_CA" -days 365 -keyout ca.key -out ca.crt
@@ -49,7 +51,7 @@ function generate_server ()
 {
   echo "$SUBJECT_SERVER"
   openssl req -nodes -sha256 -new -subj "$SUBJECT_SERVER" -keyout server.key -out server.csr
-  openssl x509 -req -sha256 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365
+  openssl x509 -req -sha256 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -extfile <(printf "subjectAltName=IP:$COMMON_NAME,DNS:localhost")
 }
 
 function generate_client ()
