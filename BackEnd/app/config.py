@@ -13,6 +13,7 @@ class BaseConfig(object):
     ''' Base config class. '''
 
     APP_NAME = environ.get('APP_NAME') or 'SmartWareHouse'
+    MQTT_BROKER_APP = f'{APP_NAME}BROKER'
     ORIGINS = ['*']
     EMAIL_CHARSET = 'UTF-8'
     API_KEY = environ.get('API_KEY')
@@ -21,6 +22,7 @@ class BaseConfig(object):
     RESULT_BACKEND = environ.get('RESULT_BACKEND')
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     LOG_INFO_FILE = path.join(basedir, 'log', f'{current_date}-INFO.log')
+    LOG_MQTT_FILE = path.join(basedir, 'log', f'{current_date}-MQTT.log')
     LOG_CELERY_FILE = path.join(basedir, 'log', f'{current_date}-celery.log')
     MONGODB_URI = environ.get('MONGODB_URI')    
     MONGODB_URI_FULL= environ.get('MONGODB_TEST_URI_FULL') if APPLICATION_ENV == 'test' else environ.get('MONGODB_URI_FULL')
@@ -60,12 +62,24 @@ class BaseConfig(object):
                 'formatter': 'standard',
                 'backupCount': 5
             },
+            'log_mqtt_file': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': LOG_MQTT_FILE,
+                'maxBytes': 16777216,  # 16megabytes
+                'formatter': 'standard',
+                'backupCount': 5
+            },
         },
         'loggers': {
             APP_NAME: {
                 'level': 'DEBUG',
                 'handlers': ['log_info_file'],
             },
+            MQTT_BROKER_APP: {
+                'level': 'DEBUG',
+                'handlers': ['log_mqtt_file', 'console'],
+            }
         },
     }
 

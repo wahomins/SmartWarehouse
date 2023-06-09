@@ -120,16 +120,102 @@ To generate the certificates execute the following command in the `broker/keys` 
 
 #### Stopping the MQTT Broker
 
-To stop the MQTT broker container, use the following command:
+1. To stop the MQTT broker container, use the following command:
     ```
     docker-compose -f broker/docker-compose.yml down
     ```
 
-#### Configuring the MQTT Client
+## Configuring the MQTT Client
 
 1. From the keys the generated on broker config,`ca.cert`,`client.crt` and `client.key`, copy the files to the `app/mqtt/certs` directory.
 
 2. Change the configs for the broker connection in the .env file
+
+
+## MQTT Message Structure
+
+- There are three main topics: TO_HOST, TO_DEVICE, and CLIENT_CONNECTIONS.
+
+#### TO_HOST
+The `TO_HOST` topic is used for messages being sent from devices to the server.
+
+Topic format: `TO_HOST/<device_group>/<device_subgroup>/<device_id>`
+
+| Key | Description |
+| --- | --- |
+| data | The payload to be processed by the server. |
+
+Example message:
+```json
+{
+  "data": {
+    "name": "John",
+    "status": "active",
+    "ip": "192.168.0.1"
+  }
+}
+```
+#### TO_DEVICE
+The `TO_DEVICE` topic is used for messages being sent from the server to the devices.
+
+Topic format: `TO_DEVICE/<device_group>/<device_subgroup>/<device_id>`
+
+| Key | Description |
+| --- | --- |
+| data | The payload for the device to process. |
+
+Example message:
+```json
+{
+  "data": {
+    "command": "start",
+    "duration": 10
+  }
+}
+```
+#### CLIENT_CONNECTIONS
+The `CLIENT_CONNECTIONS` topic is used for logging device connections to the MQTT broker.
+
+Topic: `CLIENT_CONNECTIONS` 
+
+Topic format: `CLIENT_CONNECTIONS/<device_id>`
+
+| Key | Description |
+| --- | --- |
+| data | Information about the connected device. |
+
+Example message:
+```json
+{
+  "data": {
+    "name": "Device1",
+    "status": "connected",
+    "ip": "192.168.0.2"
+  }
+}
+```
+
+
+Devices can also log actions happening on them in this topic.
+
+Topic format: `CLIENT_CONNECTIONS/activity/<device_id>`
+
+Example message:
+```json
+{
+  "data": {
+    "name": "main_door",
+    "action": "opened",
+    "meta_data": {
+        "user_id": "2g36y489derty87",
+        "timestamp": "2023-05-14 12:12"
+    }
+  }
+}
+```
+
+These are the main topics and message structures used in the MQTT communication. Devices publish to the `TO_HOST` topic and subscribe to the `TO_DEVICE` topic based on their device group, subgroup, and ID. The `CLIENT_CONNECTIONS` topic is used to log device connections to the MQTT broker.
+
 
 ### Starting the Server
 
@@ -173,19 +259,6 @@ Includes preconfigured packages to kick start flask app by just setting appropri
 ```shell
 $ curl --location --request GET 'http://localhost:5000/status'
 ```
-- Check if core app API and celery task is working via
-```shell
-$ curl --location --request GET 'http://localhost:5000/api/core/test'
-```
-- Check if authorization is working via (change `API Key` as per you `.env`)
-```shell
-$ curl --location --request GET 'http://localhost:5000/api/core/restricted' --header 'x-api-key: 436236939443955C11494D448451F'
-```
-
 ## Contact
 
 If you have any questions or need further assistance, feel free to contact us at [smart warehouses](wahomins@gmail.com).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
