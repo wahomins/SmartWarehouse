@@ -1,24 +1,26 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import jwt_decode from 'jwt-decode';
+import { login } from '../apis/user.api';
+
 class AuthService {
   handleAuthentication = () => {
     const accessToken = this.getAccessToken();
-    if (!accessToken || !this.isValidToken(accessToken)) return;
+    if (!accessToken) return;
     this.setSession('accessToken', accessToken);
   };
 
-  loginWithAuth0 = async (username: string, roleUser: string) => {
-    const accessToken = '1929312831903129321';
-    this.setSession('accessToken', accessToken);
-    const userStringify = JSON.stringify({ username, roleUser });
+  loginWithToken = async (username: string, password: string) => {
+    const loginResp = await login('/users/login', {
+      username: username,
+      password: password,
+    });
+    this.setSession('accessToken', loginResp.accessToken);
+    const userStringify = JSON.stringify(loginResp);
     this.setSession('user', userStringify);
     return {
-      user: username,
-      role: roleUser,
-    };
-  };
-
-  loginWithToken = async () => {
-    return {
-      user: 'tonynguyen',
+      fullName: loginResp.full_name,
+      user: loginResp,
+      role: loginResp.role || 'staff',
     };
   };
 
@@ -37,16 +39,35 @@ class AuthService {
 
   getAccessToken = () => localStorage.getItem('accessToken');
 
-  isAuthenticated = () => !!this.getAccessToken();
-
-  isValidToken = (accessToken: string | null) => {
-    const expireTime = 1606275140.897;
-    if (!accessToken) return false;
-
-    const currentTime = Date.now() / 1000;
-
-    return expireTime < currentTime;
+  isAuthenticated = () => {
+    const token = this.getAccessToken();
+    if (token) {
+      try {
+        const decodedToken: any = jwt_decode(token);
+        if (typeof decodedToken === 'object' && decodedToken.exp) {
+          const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+          const currentTime = Date.now();
+          if (currentTime < expirationTime) {
+            // Token is not expired
+            return true;
+          }
+        }
+      } catch (error) {
+        // Token verification failed
+        return false;
+      }
+    }
+    return false;
   };
+
+  //   isValidToken = (accessToken: string | null) => {
+  //     const expireTime = 1606275140.897;
+  //     if (!accessToken) return false;
+
+  //     const currentTime = Date.now() / 1000;
+
+  //     return expireTime < currentTime;
+  //   };
 }
 
 const authService = new AuthService();

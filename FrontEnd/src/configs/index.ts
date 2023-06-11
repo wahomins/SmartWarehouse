@@ -9,7 +9,6 @@ export const THEMES = {
 
 export const LANGUAGE = {
   ENGLISH: 'en',
-  VIETNAMESE: 'vn',
 };
 
 const VERSION_PROJECT = {

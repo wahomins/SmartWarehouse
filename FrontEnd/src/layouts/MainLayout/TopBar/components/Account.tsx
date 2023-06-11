@@ -19,13 +19,14 @@ import { PATH_NAME } from 'configs';
 import { logout } from 'actions/auth.action';
 
 // selectors
-import { roleSelector } from 'selectors/auth.selector';
+import { roleSelector, fullNameSelector } from 'selectors/auth.selector';
 
 function Account({ ...classes }) {
   const { t: translate } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const role = useSelector(roleSelector);
+  const fullName = useSelector(fullNameSelector);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const _handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -68,7 +69,7 @@ function Account({ ...classes }) {
         open={Boolean(anchorEl)}
         onClose={_handleClose}
       >
-        <div className={classes.textRole}>{role}</div>
+        <div className={classes.textRole}>{fullName || role}</div>
         <Divider />
         <MenuItem>My account</MenuItem>
         <MenuItem className={classes.menuProfile} onClick={_handleLogout}>

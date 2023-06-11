@@ -36,9 +36,6 @@ function Language({ ...classes }) {
       case LANGUAGE.ENGLISH: {
         return 'ENGLISH';
       }
-      case LANGUAGE.VIETNAMESE: {
-        return 'VIETNAMESE';
-      }
       default:
         return null;
     }
@@ -58,9 +55,6 @@ function Language({ ...classes }) {
       <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem selected={language === LANGUAGE.ENGLISH} onClick={_handleChooseLanguage(LANGUAGE.ENGLISH)}>
           English
-        </MenuItem>
-        <MenuItem selected={language === LANGUAGE.VIETNAMESE} onClick={_handleChooseLanguage(LANGUAGE.VIETNAMESE)}>
-          Vietnamese
         </MenuItem>
       </Menu>
     </>

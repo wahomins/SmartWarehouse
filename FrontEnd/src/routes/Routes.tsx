@@ -20,8 +20,8 @@ import RoleRoute from './RoleRoute';
 // modules
 const Error404View = lazy(() => import('features/Error404View'));
 const DenyView = lazy(() => import('features/DenyView'));
-const ProductAdd = lazy(() => import('features/Product/ProductAdd'));
-const ProductList = lazy(() => import('features/Product/ProductList'));
+const ProductAdd = lazy(() => import('features/Product/DevicesAdd'));
+const ProductList = lazy(() => import('features/Product/DevicesList'));
 const Users = lazy(() => import('features/Users'));
 const Dashboard = lazy(() => import('features/Dashboard'));
 const Playbackground = lazy(() => import('features/Playbackground'));
@@ -59,37 +59,37 @@ const routesConfig: IRoutes[] = [
         exact: true,
         path: PATH_NAME.DASHBOARD,
         component: Dashboard,
-        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         exact: true,
         path: PATH_NAME.PLAY_BACKGROUND,
         component: Playbackground,
-        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         exact: true,
         path: PATH_NAME.PRODUCT_LIST,
         component: ProductList,
-        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         exact: true,
         path: PATH_NAME.PRODUCT_ADD,
         component: ProductAdd,
-        requireRoles: [USER_ROLE.ADMIN],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
       },
       {
         exact: true,
         path: PATH_NAME.KANBAN,
         component: Kanban,
-        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         exact: true,
         path: PATH_NAME.USERS,
         component: Users,
-        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         component: () => <Redirect to={PATH_NAME.ERROR_404} />,

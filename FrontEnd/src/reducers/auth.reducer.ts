@@ -2,6 +2,7 @@ import { IAuthActionTypes, IAuthActionCreator, IAuthState } from 'models/IAuthSt
 
 const initialState: IAuthState = {
   user: null,
+  fullName: null,
   role: null,
 };
 
@@ -13,6 +14,7 @@ const reducer = (state = initialState, { type, payload }: IAuthActionCreator) =>
       return {
         ...state,
         user: payload.user,
+        username: payload.fullName,
         role: payload.role,
       };
     case IAuthActionTypes.LOGIN_FAILURE:
@@ -30,8 +32,10 @@ const reducer = (state = initialState, { type, payload }: IAuthActionCreator) =>
       return {
         ...state,
         user: payload.user,
+        username: payload.fullName,
         role: payload.role,
       };
+
     default:
       return state;
   }

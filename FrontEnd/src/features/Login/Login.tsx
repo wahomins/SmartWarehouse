@@ -10,16 +10,9 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 
 // material icon
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-
-// configs
-import { USER_ROLE } from 'configs';
 
 // actions
 import { login } from 'actions/auth.action';
@@ -48,12 +41,12 @@ export default function SignIn() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [name, setName] = useState('tonynguyen');
-  const [role, setRole] = useState('ADMIN');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
 
   const _onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(login(name, role, history));
+    dispatch(login(name, password, history));
   };
 
   return (
@@ -73,28 +66,28 @@ export default function SignIn() {
             required
             fullWidth
             id="name"
-            label="User Name"
+            label="Username"
             name="name"
-            autoComplete="name"
+            autoComplete="username"
             autoFocus
             value={name}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           />
           <br />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="password"
+            label="Password"
+            name="password"
+            type="password" // Set the type to "password" to display it as a password input
+            autoComplete="current-password"
+            value={password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+          />
           <br />
-          <FormControl variant="outlined" fullWidth>
-            <InputLabel id="demo-simple-select-outlined-label">Role</InputLabel>
-            <Select
-              fullWidth
-              value={role}
-              onChange={(e: React.ChangeEvent<{ value: unknown }>) => setRole(e.target.value as string)}
-              label="Role"
-            >
-              <MenuItem value={USER_ROLE.ADMIN}>Admin</MenuItem>
-              <MenuItem value={USER_ROLE.LEAD}>Lead</MenuItem>
-              <MenuItem value={USER_ROLE.GUEST}>Guest</MenuItem>
-            </Select>
-          </FormControl>
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
             Submit
           </Button>

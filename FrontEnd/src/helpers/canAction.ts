@@ -16,6 +16,19 @@ function defineAbilitiesFor(type: string) {
       can('view', DRAWER_MENU_LABEL.PLAY_BACKGROUND);
       can('view', DRAWER_MENU_LABEL.DASHBOARD);
 
+      can(['create', 'update', 'view', 'delete'], DRAWER_MENU_LABEL.PRODUCT);
+      can(['create', 'update', 'view', 'delete'], DRAWER_MENU_LABEL.PRODUCT_LIST);
+
+      can(['create', 'update', 'view', 'delete'], DRAWER_MENU_LABEL.KANBAN);
+      can(['create', 'update', 'view', 'delete'], DRAWER_MENU_LABEL.USERS);
+
+      // action
+      break;
+    case USER_ROLE.STAFF:
+      // menu
+      can('view', DRAWER_MENU_LABEL.PLAY_BACKGROUND);
+      can('view', DRAWER_MENU_LABEL.DASHBOARD);
+
       can('view', DRAWER_MENU_LABEL.PRODUCT);
       can('view', DRAWER_MENU_LABEL.PRODUCT_LIST);
 

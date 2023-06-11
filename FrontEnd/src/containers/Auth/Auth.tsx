@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import authService from 'services/authService';
 
 // actions
-import { setUserData } from 'actions/auth.action';
+import { setUserData, logout } from 'actions/auth.action';
 
 const Auth: FC = ({ children }) => {
   const dispatch = useDispatch();
@@ -17,7 +17,9 @@ const Auth: FC = ({ children }) => {
       if (authService.isAuthenticated()) {
         const user = authService.getUser();
         const parseUser = JSON.parse(user);
-        dispatch(setUserData(parseUser.username, parseUser.roleUser));
+        dispatch(setUserData(parseUser, parseUser.full_name, parseUser.role));
+      } else {
+        dispatch(logout());
       }
     }
     initAuth();
