@@ -32,22 +32,22 @@ export const navBarCommon = [
     subheader: 'Dashboard',
     items: [
       {
-        title: 'Product',
+        title: 'Device',
         icon: ShopIcon,
-        href: PATH_NAME.PRODUCT,
-        label: DRAWER_MENU_LABEL.PRODUCT,
+        href: PATH_NAME.DEVICE,
+        label: DRAWER_MENU_LABEL.DEVICE,
         items: [
           {
-            title: 'Add Product',
+            title: 'Add Device',
             icon: AddIcon,
-            href: PATH_NAME.PRODUCT_ADD,
-            label: DRAWER_MENU_LABEL.PRODUCT_ADD,
+            href: PATH_NAME.DEVICE_ADD,
+            label: DRAWER_MENU_LABEL.DEVICE_ADD,
           },
           {
-            title: 'List Product',
+            title: 'List Devices',
             icon: ViewListIcon,
-            href: PATH_NAME.PRODUCT_LIST,
-            label: DRAWER_MENU_LABEL.PRODUCT_LIST,
+            href: PATH_NAME.DEVICE_LIST,
+            label: DRAWER_MENU_LABEL.DEVICE_LIST,
           },
         ],
       },

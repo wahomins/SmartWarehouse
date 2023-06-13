@@ -11,6 +11,9 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 
 // atomic
@@ -22,34 +25,48 @@ import { canAction } from 'helpers';
 // hooks
 import { useCustomPagination } from 'hooks/usePagination';
 
+interface Action {
+  resource: string;
+  actions: string[];
+}
+
+interface Header {
+  columnName: string;
+  key: string;
+}
+
 interface SimpleGridProps {
   header: string;
   addPathName: string;
-  actions: { resource: string; action: string }[];
+  actions: Action;
+  deletePathName: string;
+  updatePathName: string;
   pagination: {
     pageNumber: number;
     itemsPerPage: number;
   };
   table: {
     rows: any[];
-    headers: { columnName: string; key: string }[];
+    headers: Header[];
   };
 }
 
 function SimpleGrid(props: SimpleGridProps) {
-  const { header, addPathName, actions, pagination, table } = props;
+  const { header, addPathName, actions, deletePathName, updatePathName, pagination, table } = props;
   const { pageNumber, itemsPerPage } = pagination;
 
   const history = useHistory();
   const { page, perPage, _changePage, _changePerPage } = useCustomPagination(pageNumber, itemsPerPage);
-
+  const canCreate = actions.actions.includes('create') && canAction('create', actions.resource);
+  const canUpdate = actions.actions.includes('update') && canAction('update', actions.resource);
+  const canDelete = actions.actions.includes('delete') && canAction('delete', actions.resource);
   return (
     <div>
       <Grid container alignItems="center">
         <Grid sm={8}>
           <h2>{header}</h2>
         </Grid>
-        {actions && canAction('create', 'product') ? (
+        {canCreate ? (
           <Grid container justify="flex-end">
             <Button
               type="submit"
@@ -70,6 +87,7 @@ function SimpleGrid(props: SimpleGridProps) {
                 {table.headers.map((header) => (
                   <TableCell key={header.key}>{header.columnName}</TableCell>
                 ))}
+                {actions.actions.length > 0 ? <TableCell>Action</TableCell> : null}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -78,6 +96,24 @@ function SimpleGrid(props: SimpleGridProps) {
                   {table.headers.map((header) => (
                     <TableCell key={header.key}>{row[header.key]}</TableCell>
                   ))}
+                  {canUpdate ? (
+                    <IconButton
+                      color="primary"
+                      aria-label="edit-device"
+                      onClick={() => history.push(`${updatePathName}/${row.id}`)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  ) : null}
+                  {canDelete ? (
+                    <IconButton
+                      color="primary"
+                      aria-label="delete-device"
+                      onClick={() => history.push(`${deletePathName}/${row.id}`)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  ) : null}
                 </TableRow>
               ))}
             </TableBody>

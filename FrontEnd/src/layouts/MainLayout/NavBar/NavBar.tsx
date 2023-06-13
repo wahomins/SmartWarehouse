@@ -110,8 +110,7 @@ function NavBar({ isDrawer }: IProps) {
         <Link to={PATH_NAME.ROOT} className={classes.navBar_link}>
           <img src="/assets/images/logo.png" alt="Logo" title="logo" />
           <div>
-            Material UI <br />
-            <span className={classes.version}>v.{VERSION_PROJECT.version}</span>
+            Smart <br /> Warehouse
           </div>
         </Link>
       </div>

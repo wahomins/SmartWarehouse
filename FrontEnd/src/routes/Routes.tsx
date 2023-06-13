@@ -20,8 +20,8 @@ import RoleRoute from './RoleRoute';
 // modules
 const Error404View = lazy(() => import('features/Error404View'));
 const DenyView = lazy(() => import('features/DenyView'));
-const ProductAdd = lazy(() => import('features/Product/DevicesAdd'));
-const ProductList = lazy(() => import('features/Product/DevicesList'));
+const DeviceAdd = lazy(() => import('features/Product/DevicesAdd'));
+const DeviceList = lazy(() => import('features/Product/DevicesList'));
 const Users = lazy(() => import('features/Users'));
 const Dashboard = lazy(() => import('features/Dashboard'));
 const Playbackground = lazy(() => import('features/Playbackground'));
@@ -69,14 +69,14 @@ const routesConfig: IRoutes[] = [
       },
       {
         exact: true,
-        path: PATH_NAME.PRODUCT_LIST,
-        component: ProductList,
+        path: PATH_NAME.DEVICE_LIST,
+        component: DeviceList,
         requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {
         exact: true,
-        path: PATH_NAME.PRODUCT_ADD,
-        component: ProductAdd,
+        path: PATH_NAME.DEVICE_ADD,
+        component: DeviceAdd,
         requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
       },
       {

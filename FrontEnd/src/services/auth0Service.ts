@@ -7,7 +7,7 @@ import { PATH_NAME } from 'configs';
 import { parseJwt } from 'helpers';
 
 // types
-import { IUser } from 'models/IUser';
+import { IUser } from 'models/IUserState';
 
 interface IAuth0DecodedHash extends Auth0DecodedHash {
   idToken: string;

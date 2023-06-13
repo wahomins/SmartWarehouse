@@ -13,7 +13,7 @@ function ProductAdd() {
     <>
       <Grid container alignItems="center">
         <Grid item sm={12}>
-          <h2>Add Product</h2>
+          <h2>Add Device</h2>
         </Grid>
       </Grid>
       <Grid>

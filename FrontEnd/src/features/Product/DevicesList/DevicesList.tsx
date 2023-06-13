@@ -1,31 +1,50 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SimpleGrid from 'components/SimpleGrid';
-import { PATH_NAME } from 'configs';
+import { useDispatch, useSelector } from 'react-redux';
+import { PATH_NAME, DRAWER_MENU_LABEL } from 'configs';
+import { fetchDevices } from 'actions/devices.actions';
+import { devicesDataSelector } from 'selectors/device.selector';
 
-export default function ProductList() {
-  const header = 'Product';
-  const pathName = PATH_NAME.PRODUCT_ADD;
-  const actions = [{ resource: 'product', action: 'create' }];
+export default function DeviceList() {
+  const header = 'Devices';
+  const addPathName = PATH_NAME.DEVICE_ADD;
+  const deletePathName = PATH_NAME.DEVICE_ADD;
+  const updatePathName = PATH_NAME.DEVICE_ADD;
+  const actions = { resource: DRAWER_MENU_LABEL.DEVICE, actions: ['create', 'update', 'delete', 'view'] };
   const pagination = {
     pageNumber: 1,
     itemsPerPage: 10,
   };
+
+  const dispatch = useDispatch();
+  // const deviceData = useSelector((state) => state.device.deviceData);
+  const devicesData: any = useSelector(devicesDataSelector);
+
+  useEffect(() => {
+    dispatch(fetchDevices());
+  }, [dispatch]);
+
+  console.log(devicesData);
   const table = {
-    rows: [
-      { name: 'Frozen yoghurt', calories: 159, fat: 6.0, carbs: 24, protein: 4.0 },
-      { name: 'Ice cream sandwich', calories: 237, fat: 9.0, carbs: 37, protein: 4.3 },
-      { name: 'Eclair', calories: 262, fat: 16.0, carbs: 24, protein: 6.0 },
-      { name: 'Cupcake', calories: 305, fat: 3.7, carbs: 67, protein: 4.3 },
-      { name: 'Gingerbread', calories: 356, fat: 16.0, carbs: 49, protein: 3.9 },
-    ],
+    rows: devicesData || [],
     headers: [
-      { columnName: 'Dessert (100g serving)', key: 'name' },
-      { columnName: 'Calories', key: 'calories' },
-      { columnName: 'Fat (g)', key: 'fat' },
-      { columnName: 'Carbs (g)', key: 'carbs' },
-      { columnName: 'Protein (g)', key: 'protein' },
+      { columnName: 'Device Name', key: 'name' },
+      { columnName: 'Description', key: 'description' },
+      { columnName: 'Device Group', key: 'device_group' },
+      { columnName: 'Device Sub-Group', key: 'device_sub_group' },
+      { columnName: 'active', key: 'active' },
     ],
   };
 
-  return <SimpleGrid header={header} addPathName={pathName} actions={actions} pagination={pagination} table={table} />;
+  return (
+    <SimpleGrid
+      header={header}
+      addPathName={addPathName}
+      updatePathName={updatePathName}
+      deletePathName={deletePathName}
+      actions={actions}
+      pagination={pagination}
+      table={table}
+    />
+  );
 }

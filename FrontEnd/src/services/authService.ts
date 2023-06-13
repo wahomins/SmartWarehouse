@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import jwt_decode from 'jwt-decode';
-import { login } from '../apis/user.api';
+import { login } from 'apis/user.api';
 
 class AuthService {
   handleAuthentication = () => {
