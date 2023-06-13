@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, validator, ValidationError
+from pydantic import BaseModel, EmailStr, constr, ValidationError
 from typing import Optional
 
 
@@ -6,7 +6,7 @@ class CreateUserModel(BaseModel):
     username: Optional[str]
     password: str
     full_name: str
-    role: str
+    role: constr(regex="^(admin|manager|staff)$")
     email: EmailStr
     warehouse_id: Optional[str]
     card_number: Optional[str]

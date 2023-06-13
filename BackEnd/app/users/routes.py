@@ -96,7 +96,7 @@ def login():
     # Generate a JSON Web Token (JWT) for the authenticated user
     token = generate_token(user['_id'], user['email'], user['full_name'], user['role'])
 
-    return jsonify({'token': token, 'user_id': str(user['_id']), 'email': user['email'], 'full_name': user['full_name']}), 200
+    return jsonify({'accessToken': token, 'user_id': str(user['_id']), 'email': user['email'], 'full_name': user['full_name'], 'role': user['role']}), 200
 
 
 @user_bp.route('/reset-password', methods=['POST'])
