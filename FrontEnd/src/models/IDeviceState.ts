@@ -20,10 +20,6 @@ type ISingleDevice = {
   device_group_id: String;
 };
 
-type IDevices = {
-  devices: ISingleDevice | null;
-};
-
 export type IDeviceState = {
   deviceData: any | null;
 };

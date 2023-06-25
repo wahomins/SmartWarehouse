@@ -8,9 +8,11 @@ from cryptography.fernet import Fernet
 import base64
 from app.config import app_config
 from .user_access_log import UserAccessLog
+from app.devices.models import DeviceModel
 from app.utils.utils import format_mongo_response
 
 logger = LocalProxy(lambda: current_app.logger)
+device_model = DeviceModel()
 
 class UserModel:
     def __init__(self):
@@ -68,6 +70,30 @@ class UserModel:
             return user_data
         else:
             return None
+
+    def get_user_by_id_card(self, user_id):
+        # Retrieve a user by their ID or cardNumber
+        try:
+            if isinstance(user_id, ObjectId):
+                query = {"_id": ObjectId(user_id)}
+            else:
+                query = {"card_number": user_id}
+
+            encrypted_user = self.users_collection.find_one(query)
+
+            if encrypted_user:
+                # Decrypt the user data before returning
+                user_data = self._decrypt_user_data(encrypted_user)
+                return user_data
+            else:
+                return None
+        except Exception as e:
+            logger.error(f'Error fetching user:')
+            logger.exception(e)
+            
+            return None
+            
+
 
     def get_user_by_username(self, username_or_email):
         # Retrieve a user by their username or email from the MongoDB collection
@@ -185,5 +211,26 @@ class UserModel:
         return format_mongo_response(access_logs)
 
     def fetch_all_logs(self):
-        access_logs = UserAccessLog.objects()
-        return format_mongo_response(access_logs)
+        # access_logs = UserAccessLog.objects()
+        access_logs = format_mongo_response(UserAccessLog.objects())
+        formatted_logs = []
+        for log in access_logs:
+            logger.info(log)
+            device_name = device_model.get_device_by_id(log['device_id'])
+            user = self.get_user_by_id_card(log['user_id'])
+            full_name = user['full_name'] if user else "Unknown User"
+
+            formatted_log = {
+                "device_id": log['device_id'],
+                "user_id": log['user_id'],
+                "device_name": device_name['name'] if device_name else "Unknown Device",
+                "user_name": full_name,
+                "timestamp": log['timestamp'],
+                "created_on": log['created_on'],
+                "status": log['status'],
+                "meta_data": log.get('meta_data', {}),
+            }
+
+            formatted_logs.append(formatted_log)
+
+        return formatted_logs

@@ -5,10 +5,14 @@ const initialState: any = {
 };
 
 const reducer = (state = initialState, { type, payload }: any) => {
-  console.log('user reducer: ', { type, payload });
-
   switch (type) {
     case IUserActionTypes.FETCH_USER:
+      return {
+        ...state,
+        userData: payload,
+      };
+
+    case IUserActionTypes.FETCH_USER_ACCESS_LOGS:
       return {
         ...state,
         userData: payload,

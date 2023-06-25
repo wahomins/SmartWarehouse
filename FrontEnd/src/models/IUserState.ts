@@ -4,6 +4,7 @@ export enum IUserActionTypes {
   ADD_USER = 'USER/ADD_USER',
   UPDATE_USER = 'USER/UPDATE_USER',
   DELETE_USER = 'USER/DELETE_USER',
+  FETCH_USER_ACCESS_LOGS = 'USER/FETCH_USER_ACCESS_LOGS',
 }
 
 export type IUser = {

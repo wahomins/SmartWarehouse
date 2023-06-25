@@ -7,9 +7,16 @@ import commonService from 'services/commonServices';
 
 export const fetchUsers = () => async (dispatch: Dispatch<any>) => {
   const users: any = await commonService.callGet('/users/');
-  console.log('rraah', users);
   dispatch({
     type: IUserActionTypes.FETCH_USER,
+    payload: users,
+  });
+};
+
+export const fetchAccesslogs = () => async (dispatch: Dispatch<any>) => {
+  const users: any = await commonService.callGet('/users/logs/access/');
+  dispatch({
+    type: IUserActionTypes.FETCH_USER_ACCESS_LOGS,
     payload: users,
   });
 };

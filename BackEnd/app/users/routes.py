@@ -152,7 +152,7 @@ def get_user_by_card_number(decoded_token, card_number):
     else:
         return jsonify({'error': 'User not found'}), 404
 
-@user_bp.route('/<user_id>', methods=['DELETE'])
+@user_bp.route('/<user_id>/', methods=['DELETE'])
 @authenticate
 def delete_user(user_id):
     result = user_model.delete_user(user_id)
@@ -163,7 +163,7 @@ def delete_user(user_id):
         # User not found
         return jsonify({'error': 'User not found'}), 404
     
-@user_bp.route('/logs/access', methods=['GET'])
+@user_bp.route('/logs/access/', methods=['GET'])
 @authenticate
 def get_access_all_logs(decoded_token):
     result = user_model.fetch_all_logs()

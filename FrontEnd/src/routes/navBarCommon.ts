@@ -1,8 +1,9 @@
 // material icon
 import AddIcon from '@material-ui/icons/Add';
-import ShopIcon from '@material-ui/icons/Shop';
+import DevicesIcon from '@material-ui/icons/DeviceHub';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import PeopleIcon from '@material-ui/icons/People';
+import CollectionIcon from '@material-ui/icons/Collections';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -20,12 +21,12 @@ export const navBarCommon = [
         icon: DashboardIcon,
         label: DRAWER_MENU_LABEL.DASHBOARD,
       },
-      {
-        title: 'Playbackground',
-        href: PATH_NAME.PLAY_BACKGROUND,
-        icon: SportsEsportsIcon,
-        label: DRAWER_MENU_LABEL.PLAY_BACKGROUND,
-      },
+      // {
+      //   title: 'Playbackground',
+      //   href: PATH_NAME.PLAY_BACKGROUND,
+      //   icon: SportsEsportsIcon,
+      //   label: DRAWER_MENU_LABEL.PLAY_BACKGROUND,
+      // },
     ],
   },
   {
@@ -33,7 +34,7 @@ export const navBarCommon = [
     items: [
       {
         title: 'Device',
-        icon: ShopIcon,
+        icon: DevicesIcon,
         href: PATH_NAME.DEVICE,
         label: DRAWER_MENU_LABEL.DEVICE,
         items: [
@@ -52,22 +53,51 @@ export const navBarCommon = [
         ],
       },
       {
-        title: 'Kanban',
-        href: PATH_NAME.KANBAN,
-        icon: AssessmentIcon,
-        label: DRAWER_MENU_LABEL.KANBAN,
-      },
-    ],
-  },
-  {
-    subheader: 'Users',
-    items: [
-      {
         title: 'Users',
         icon: PeopleIcon,
         href: PATH_NAME.USERS,
         label: DRAWER_MENU_LABEL.USERS,
+        items: [
+          {
+            title: 'Users',
+            icon: ViewListIcon,
+            href: PATH_NAME.USERS_LIST,
+            label: DRAWER_MENU_LABEL.LIST,
+          },
+          {
+            title: 'AccessLogs',
+            icon: CollectionIcon,
+            href: PATH_NAME.USERS_ACCESS_LOGS,
+            label: DRAWER_MENU_LABEL.ACCESSLOGS,
+          },
+        ],
       },
+      // {
+      //   title: 'Kanban',
+      //   href: PATH_NAME.KANBAN,
+      //   icon: AssessmentIcon,
+      //   label: DRAWER_MENU_LABEL.KANBAN,
+      // },
     ],
+  },
+  {
+    // subheader: 'Users',
+    // icon: PeopleIcon,
+    // href: PATH_NAME.USERS,
+    // label: DRAWER_MENU_LABEL.USERS,
+    // items: [
+    //   {
+    //     title: 'Users',
+    //     icon: ViewListIcon,
+    //     href: PATH_NAME.USERS_LIST,
+    //     label: DRAWER_MENU_LABEL.LIST,
+    //   },
+    //   {
+    //     title: 'AccessLogs',
+    //     icon: CollectionIcon,
+    //     href: PATH_NAME.USERS_ACCESS_LOGS,
+    //     label: DRAWER_MENU_LABEL.ACCESSLOGS,
+    //   },
+    // ],
   },
 ];

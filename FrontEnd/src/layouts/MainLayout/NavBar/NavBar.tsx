@@ -10,7 +10,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 
 // configs
 import { navBarCommon } from 'routes/navBarCommon';
-import { PATH_NAME, VERSION_PROJECT } from 'configs';
+import { PATH_NAME } from 'configs';
 
 // types
 import { IChildNavBar } from 'models/INavBar';

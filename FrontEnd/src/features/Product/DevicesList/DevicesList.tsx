@@ -24,7 +24,6 @@ export default function DeviceList() {
     dispatch(fetchDevices());
   }, [dispatch]);
 
-  console.log(devicesData);
   const table = {
     rows: devicesData || [],
     headers: [

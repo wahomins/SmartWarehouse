@@ -10,5 +10,7 @@ export const PATH_NAME = {
   DEVICE_ADD: '/device/add',
   USER_ADD: '/users/add',
   USERS: '/users',
+  USERS_LIST: '/users',
   KANBAN: '/kanban',
+  USERS_ACCESS_LOGS: '/users/accesslogs',
 };

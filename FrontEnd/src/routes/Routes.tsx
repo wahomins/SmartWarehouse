@@ -22,7 +22,8 @@ const Error404View = lazy(() => import('features/Error404View'));
 const DenyView = lazy(() => import('features/DenyView'));
 const DeviceAdd = lazy(() => import('features/Product/DevicesAdd'));
 const DeviceList = lazy(() => import('features/Product/DevicesList'));
-const Users = lazy(() => import('features/Users'));
+const Users = lazy(() => import('features/Users/UsersList'));
+const UserAccesslogs = lazy(() => import('features/Users/UserAccesslogs'));
 const Dashboard = lazy(() => import('features/Dashboard'));
 const Playbackground = lazy(() => import('features/Playbackground'));
 const Login = lazy(() => import('features/Login'));
@@ -89,6 +90,12 @@ const routesConfig: IRoutes[] = [
         exact: true,
         path: PATH_NAME.USERS,
         component: Users,
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
+      },
+      {
+        exact: true,
+        path: PATH_NAME.USERS_ACCESS_LOGS,
+        component: UserAccesslogs,
         requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {

@@ -24,7 +24,6 @@ export default function ProductList() {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  console.log(usersData);
   const table = {
     rows: usersData || [],
     headers: [

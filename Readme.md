@@ -223,6 +223,10 @@ To start the server, run the following command:
 
 `python server.py`
 
+To start in production, run:
+
+`gunicorn -c gunicorn_config.py server:server`
+
 The server will start running on the default port. You can modify the port number in the `server.py` file if needed.
 
 #

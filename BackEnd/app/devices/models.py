@@ -56,8 +56,13 @@ class DeviceModel:
 
     def get_device_by_id(self, device_id):
         # Retrieve a device by its ID from the MongoDB collection
-        device = self.devices_collection.find_one({"_id": ObjectId(device_id)})
-        return device
+        try:
+            device = self.devices_collection.find_one({"_id": ObjectId(device_id)})
+            return device
+        except Exception as e:
+            logger.error(f'Error fetching device by Id:')
+            logger.exception(e)
+            return None
     
     
     def get_device_by_name(self, device_name):

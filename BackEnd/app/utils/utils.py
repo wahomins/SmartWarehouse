@@ -17,7 +17,9 @@ def format_mongo_response(doc):
         if isinstance(field_value, ObjectId):
             return str(field_value)
         elif isinstance(field_value, datetime):
-            return field_value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            return field_value.strftime('%Y-%m-%dT%H:%M:%S.%fZ')        
+        elif field_value is None:
+            return {}
         else:
             return field_value
     if doc is None:
