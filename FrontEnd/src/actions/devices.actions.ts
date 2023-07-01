@@ -15,7 +15,14 @@ export const fetchDevices = () => async (dispatch: Dispatch<any>) => {
 
 export const getDevice = (deviceId: string, history: IHistory) => async (dispatch: Dispatch<any>) => {
   dispatch({
-    type: IDeviceActionTypes.FETCH_DEVICE,
+    type: IDeviceActionTypes.GET_DEVICE,
+    payload: {},
+  });
+};
+
+export const fetchDeviceActivities = () => async (dispatch: Dispatch<any>) => {
+  dispatch({
+    type: IDeviceActionTypes.FETCH_DEVICE_ACTIVIES,
     payload: {},
   });
 };

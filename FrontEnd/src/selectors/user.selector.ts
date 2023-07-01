@@ -12,3 +12,8 @@ export const usersDataSelector = createSelector(
   (state: IRootState) => state.user,
   (user) => user.userData,
 );
+
+export const usersAccessDataSelector = createSelector(
+  (state: IRootState) => state.user,
+  (user) => user.userAccessData,
+);

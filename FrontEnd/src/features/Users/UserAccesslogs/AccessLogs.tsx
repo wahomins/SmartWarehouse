@@ -3,7 +3,7 @@ import SimpleGrid from 'components/SimpleGrid';
 import { useDispatch, useSelector } from 'react-redux';
 import { PATH_NAME, DRAWER_MENU_LABEL } from 'configs';
 import { fetchAccesslogs } from 'actions/users.action';
-import { usersDataSelector } from 'selectors/user.selector';
+import { usersAccessDataSelector } from 'selectors/user.selector';
 
 export default function ProductList() {
   const header = 'AccessLogs';
@@ -17,7 +17,7 @@ export default function ProductList() {
   };
 
   const dispatch = useDispatch();
-  const usersData = useSelector(usersDataSelector);
+  const usersData = useSelector(usersAccessDataSelector);
   // const usersData: any = useSelector((state) => state.user) || [];
 
   useEffect(() => {

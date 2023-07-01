@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from werkzeug.local import LocalProxy
 from flask_pydantic import validate
 from .validations import CreateDeviceModel, UpdateDeviceModel, AuthModel
@@ -12,7 +12,7 @@ from .device_activity import DeviceActivityLog
 
 device_bp = Blueprint('device', __name__)
 device_model = DeviceModel()
-
+logger = LocalProxy(lambda: current_app.logger)
 
 @device_bp.route('/', methods=['POST'])
 @validate(body=CreateDeviceModel)
@@ -49,11 +49,16 @@ def update_device(decoded_token, device_id):
 @authenticate
 def get_all_devices(decoded_token):
     devices = device_model.get_all_devices()
-
+    response = []
     for device in devices:
+        subgroup = get_device_subgroup_by_id(device.get('device_sub_group'))
+        subgroup = subgroup[0] if subgroup else subgroup
+        device['device_sub_group'] = subgroup['name'] if subgroup else ''
+        device['device_group'] = subgroup['group_name'] if subgroup else ''
         del device['secret']
+        response.append(device)
 
-    return jsonify({'devices': devices}), 200
+    return jsonify({'devices': response}), 200
 
 
 @device_bp.route('/<device_id>', methods=['GET'])

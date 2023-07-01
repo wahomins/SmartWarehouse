@@ -12,3 +12,8 @@ export const devicesDataSelector = createSelector(
   (state: IRootState) => state.device,
   (device) => device.deviceData,
 );
+
+export const devicesActivitySelector = createSelector(
+  (state: IRootState) => state.device,
+  (device) => device.deviceActivityData,
+);

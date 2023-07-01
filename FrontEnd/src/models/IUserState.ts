@@ -19,4 +19,5 @@ export type IUser = {
 
 export type IUserState = {
   userData: any | null;
+  userAccessData: any | null;
 };

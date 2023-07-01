@@ -11,6 +11,11 @@ const reducer = (state = initialState, { type, payload }: any) => {
         ...state,
         deviceData: payload.devices,
       };
+    case IDeviceActionTypes.FETCH_DEVICE_ACTIVIES:
+      return {
+        ...state,
+        deviceActivityData: payload,
+      };
 
     default:
       return state;

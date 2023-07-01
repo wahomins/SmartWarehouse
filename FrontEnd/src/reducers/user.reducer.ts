@@ -15,7 +15,7 @@ const reducer = (state = initialState, { type, payload }: any) => {
     case IUserActionTypes.FETCH_USER_ACCESS_LOGS:
       return {
         ...state,
-        userData: payload,
+        userAccessData: payload,
       };
 
     default:

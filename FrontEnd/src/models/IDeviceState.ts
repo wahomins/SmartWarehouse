@@ -3,6 +3,7 @@ export enum IDeviceActionTypes {
   GET_DEVICE = 'DEVICE/GET_DEVICE',
   ADD_DEVICE = 'DEVICE/ADD_DEVICE',
   UPDATE_DEVICE = 'DEVICE/UPDATE_DEVICE',
+  FETCH_DEVICE_ACTIVIES = 'FETCH_DEVICE_ACTIVIES',
   DELETE_DEVICE = 'DEVICE/DELETE_DEVICE',
 }
 
@@ -22,6 +23,7 @@ type ISingleDevice = {
 
 export type IDeviceState = {
   deviceData: any | null;
+  deviceActivityData: any | null;
 };
 
 export type IDeviceActionCreator = {

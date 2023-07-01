@@ -20,8 +20,14 @@ class DeviceSubGroup(Document):
         ]
     }
 
+    def to_mongo(self, *args, **kwargs):
+        fields = ["_id","name", "description", "group", "created_on"]
+        data = super().to_mongo(*args, **kwargs)
+        return {field: data[field] for field in fields if field in data}
+    
     def to_json(self):
         return {
+            "_id": str(self.pk),
             "name": self.name,
             "description": self.description,
             "group_name": self.group.name,
