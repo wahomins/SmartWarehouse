@@ -1,4 +1,3 @@
-
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
 

@@ -31,6 +31,14 @@ def handle_message(client, message, tmp):
                     response = nfc_authentication(device_id, payload_data['data'], tmp)
                 # Add more handlers for different authentication methods
 
+            if route == "Environment":
+                if handler == "mq2":
+                    DeviceActivityLog.log_device_activity(f'{route}/{handler}', device_id, 'mq2 smoke/co/lpg detected', payload_data['data'])
+                    response = json.dumps({
+                                    'status_code': 200,
+                                    'status': "processed"
+                                })   
+
             client.publish(message.topic.replace('HOST', 'DEVICE'), response)
             # Add more conditional statements for other routes
         elif len(topic_parts) >= 4 and topic_parts[0] == "CLIENT_CONNECTIONS":

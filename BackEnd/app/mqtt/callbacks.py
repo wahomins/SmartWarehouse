@@ -11,11 +11,13 @@ def on_connect(client, userdata, flags, rc, v5config=None):
     # client.subscribe([('TO_HOST/#', 0), ('TO_DEVICE/#', 1), ('CLIENT_CONNECTIONS/#', 2)])
     client.subscribe([('TO_HOST/#', 0), ('CLIENT_CONNECTIONS/#', 2)])
     init_message = json.dumps({
-        'name': 'server',
-        'status': 'connected',
-        'timestamp': dt.now().strftime("%H:%M:%S.%f")[:-2]
+        "data": {
+            'name': 'server',
+            'status': 'connected',
+            'timestamp': dt.now().strftime("%H:%M:%S.%f")[:-2]
+        }
     })
-    client.publish("CLIENT_CONNECTIONS/server", payload=init_message, retain=False)
+    client.publish("CLIENT_CONNECTIONS/activity/server", payload=init_message, retain=False)
     logger.info(dt.now().strftime("%H:%M:%S.%f")[:-2] + " Connection returned result: "+ack(rc))
 
 def on_message(client, userdata, message,tmp=None):

@@ -15,7 +15,7 @@ const char *STAPSK = "Qwertyu80p";
 
 int8_t TIME_ZONE = +3; //Nairobi(Kenya): +3 UTC
 
-const char* MQTT_SERVER = "142.93.52.78";
+const char* MQTT_SERVER = "192.168.100.5";
 const char* MQTT_PORT = "8883";
 const char* MQTT_USER = "mosquitto";
 const char* MQTT_PASS = "mosquitto";

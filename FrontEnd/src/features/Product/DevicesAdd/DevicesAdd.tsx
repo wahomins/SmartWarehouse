@@ -8,7 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 
-function ProductAdd() {
+function DeviceAdd() {
   return (
     <>
       <Grid container alignItems="center">
@@ -24,7 +24,7 @@ function ProductAdd() {
           <TextField fullWidth variant="outlined" label="Name" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextField fullWidth variant="outlined" label="Alias Name" />
+          <TextField fullWidth variant="outlined" label="Description" />
         </Grid>
       </Grid>
       <br />
@@ -38,19 +38,28 @@ function ProductAdd() {
         </Grid>
         <Grid item xs={12} md={4}>
           <FormControl variant="outlined" fullWidth>
-            <InputLabel id="demo-simple-select-outlined-label">District</InputLabel>
-            <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" label="District" fullWidth>
-              <MenuItem value="phunhuan">Phu Nhuan</MenuItem>
-              <MenuItem value="binhthanh">Binh Thanh</MenuItem>
+            <InputLabel id="demo-simple-select-outlined-label">Warehouse</InputLabel>
+            <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" label="Warehouse" fullWidth>
+              <MenuItem value="phunhuan">Athi River</MenuItem>
+              <MenuItem value="binhthanh">Industrial Area</MenuItem>
             </Select>
           </FormControl>
         </Grid>
         <Grid item xs={12} md={4}>
           <FormControl variant="outlined" fullWidth>
-            <InputLabel id="demo-simple-select-outlined-label">City</InputLabel>
-            <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" label="City" fullWidth>
-              <MenuItem value="hcm">TP.HCM</MenuItem>
-              <MenuItem value="hn">HN</MenuItem>
+            <InputLabel id="demo-simple-select-outlined-label">Group</InputLabel>
+            <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" label="group" fullWidth>
+              <MenuItem value="hcm">Environmental Monitoring</MenuItem>
+              <MenuItem value="hn">Access Control</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel id="demo-simple-select-outlined-label">Subgroup</InputLabel>
+            <Select labelId="demo-simple-select-outlined-label" id="demo-simple-select-outlined" label="subgroup" fullWidth>
+              <MenuItem value="hcm">Environmental Monitoring</MenuItem>
+              <MenuItem value="hn">Access Control</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -71,4 +80,4 @@ function ProductAdd() {
   );
 }
 
-export default ProductAdd;
+export default DeviceAdd;
