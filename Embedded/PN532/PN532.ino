@@ -11,7 +11,6 @@
 
 SoftwareSerial SWSerial( D6, D5 ); // RX, TX
 
-
 PN532_SWHSU pn532swhsu( SWSerial );
 PN532 nfc( pn532swhsu );
 String tagId = "None", dispTag = "None";

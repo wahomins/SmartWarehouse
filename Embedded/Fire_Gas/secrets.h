@@ -8,10 +8,10 @@
 #define MAJOR_VER "00"
 #define MINOR_VER "00"
 
-#define THINGNAME "lpgSmokeDetector";
+#define THINGNAME "Bay Area Smoke detector";
 
-const char *STASSID = "KHAN";
-const char *STAPSK = "Qwertyu80p";
+const char *STASSID = "Lil_khan";
+const char *STAPSK = "Qwetyu8op{";
 
 int8_t TIME_ZONE = +3; //Nairobi(Kenya): +3 UTC
 
@@ -19,7 +19,7 @@ const char* MQTT_SERVER = "142.93.52.78";
 const char* MQTT_PORT = "1883";
 const char* MQTT_USER = "mosquitto";
 const char* MQTT_PASS = "mosquitto";
-const char DEVICE_ID[] = "1234ertyui";
+const char DEVICE_ID[] = "64a63c908fcd7838d8ebfb22";
 char TOPIC_TO_HOST[] = "TO_HOST/Environment/mq2/";
 char TOPIC_FROM_HOST[] = "TO_DEVICE/Environment/mq2/";
 char TOPIC_CLIENT_CONNECTION[] = "CLIENT_CONNECTIONS/activity/";

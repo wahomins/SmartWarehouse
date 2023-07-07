@@ -2,30 +2,41 @@ import React, { useEffect } from 'react';
 import SimpleGrid from 'components/SimpleGrid';
 import { useDispatch, useSelector } from 'react-redux';
 import { PATH_NAME, DRAWER_MENU_LABEL } from 'configs';
-import { fetchUsers } from 'actions/users.action';
-import { usersDataSelector } from 'selectors/user.selector';
+import { fetchWarehouses } from 'actions/warehouses.actions';
+import { warehousesDataSelector } from 'selectors/warehouse.selector';
 
-export default function ProductList() {
-  const header = 'Users';
-  const addPathName = PATH_NAME.USER_ADD;
-  const deletePathName = PATH_NAME.USER_ADD;
-  const updatePathName = PATH_NAME.USER_ADD;
-  const actions = { resource: DRAWER_MENU_LABEL.USERS, actions: ['create', 'update', 'delete', 'view'] };
+export default function WarehouseList() {
+  const header = 'Warehouses';
+  const addPathName = 'PATH_NAME.DEVICE_ADD';
+  const deletePathName = 'PATH_NAME.DEVICE_ADD';
+  const updatePathName = 'PATH_NAME.DEVICE_ADD';
+  const actions = { resource: DRAWER_MENU_LABEL.DEVICE, actions: ['create', 'update', 'delete', 'view'] };
   const pagination = {
     pageNumber: 1,
     itemsPerPage: 10,
   };
 
   const dispatch = useDispatch();
-  const usersData = useSelector(usersDataSelector);
-  // const usersData: any = useSelector((state) => state.user) || [];
+  // const deviceData = useSelector((state) => state.device.deviceData);
+  const warehousesData: any = useSelector(warehousesDataSelector);
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchWarehouses());
   }, [dispatch]);
 
   const mapData = (key: string, row: any, headerName: string): any => {
-    return row[key];
+    let value: any;
+
+    switch (headerName) {
+      case 'Location': {
+        value = `(${row.latitute}, ${row.longitude})`;
+        break;
+      }
+      default:
+        value = row[key];
+        break;
+    }
+    return value;
   };
   const onGridSearch = (rows: any[], searchValues: Record<string, string>, headers: any[]): any[] => {
     const results: [number, number][] = [];
@@ -57,13 +68,14 @@ export default function ProductList() {
     return results;
   };
   const table = {
-    rows: usersData || [],
+    rows: warehousesData || [],
     headers: [
-      { columnName: 'UserId', key: '_id', search: true, orderable: true },
-      { columnName: 'Name', key: 'full_name', search: true, orderable: true },
-      { columnName: 'Email', key: 'email' },
-      { columnName: 'Role', key: 'role' },
-      { columnName: 'username', key: 'username' },
+      { columnName: 'Name', key: 'name' },
+      { columnName: 'Description', key: 'description' },
+      { columnName: 'Manager', key: 'manager_name' },
+      { columnName: 'town', key: 'town' },
+      { columnName: 'close Land Mark', key: 'close_land_mark' },
+      { columnName: 'Location', key: 'longitude' },
     ],
   };
 

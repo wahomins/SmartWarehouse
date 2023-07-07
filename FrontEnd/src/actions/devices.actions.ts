@@ -21,8 +21,9 @@ export const getDevice = (deviceId: string, history: IHistory) => async (dispatc
 };
 
 export const fetchDeviceActivities = () => async (dispatch: Dispatch<any>) => {
+  const devices: any[] = await deviceService.fetchDeviceLogs();
   dispatch({
     type: IDeviceActionTypes.FETCH_DEVICE_ACTIVIES,
-    payload: {},
+    payload: devices,
   });
 };

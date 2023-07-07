@@ -23,7 +23,7 @@ type ISingleDevice = {
 
 export type IDeviceState = {
   deviceData: any | null;
-  deviceActivityData: any | null;
+  deviceActivityData: any | [];
 };
 
 export type IDeviceActionCreator = {

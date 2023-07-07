@@ -40,10 +40,38 @@ def get_warehouse_by_id(warehouse_id):
         return None
 
 
+# def get_all_warehouses():
+#     warehouses = Warehouse.objects.all()
+#     return [format_response(warehouse) for warehouse in warehouses]
+
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
 def get_all_warehouses():
     warehouses = Warehouse.objects.all()
-    return [format_response(warehouse) for warehouse in warehouses]
+    
+    # Fetch manager names from the users collection
+    manager_ids = [str(warehouse.manager_id) for warehouse in warehouses]
+    manager_names = {}
+    
+    with MongoClient(app_config.MONGODB_URI) as client:
+        db = client[app_config.MONGODB_NAME]
+        users_collection = db['users']
+        
+        managers = users_collection.find({'_id': {'$in': [ObjectId(manager_id) for manager_id in manager_ids]}})
+        for manager in managers:
+            manager_names[str(manager['_id'])] = manager['username']
 
+    # Format the response for each warehouse, including the managerName
+    formatted_warehouses = []
+    for warehouse in warehouses:
+        formatted_warehouse = format_response(warehouse)
+        manager_id = str(warehouse.manager_id)
+        manager_name = manager_names.get(manager_id)
+        formatted_warehouse['manager_name'] = manager_name
+        formatted_warehouses.append(formatted_warehouse)
+
+    return formatted_warehouses
 
 def create_warehouse(data):
     warehouse = Warehouse(**data)

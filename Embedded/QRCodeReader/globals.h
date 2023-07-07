@@ -1,10 +1,3 @@
-/*
- * globals.h
- *
- * Author:  Warren Taylor
- * Created: 2018-12-30
- * Copyright (c) 2018-2020 Warren Taylor.  All right reserved.
- */
 
 #ifndef GLOBALS_H_
 #define GLOBALS_H_

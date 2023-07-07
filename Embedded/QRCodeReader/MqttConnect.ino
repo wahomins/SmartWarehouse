@@ -1,6 +1,6 @@
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <TimeLib.h>
 #include "AsyncWait.h"
@@ -8,14 +8,12 @@
 #include <ArduinoJson.h>
 #include "FunctionHandler.h"
 
-SetupWifi setupWifi(
-    STASSID, STAPSK
-);
-
 const char* mqtt_server = MQTT_SERVER;
 std::function<void(String&, String&)> mqttCallback = nullptr;
 
-static PubSubClient pubsubClient(setupWifi.getWiFiClient());
+WiFiClient espClient;
+
+static PubSubClient pubsubClient(espClient);
 
 // Handle incomming messages from the broker
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -140,14 +138,11 @@ void reconnectToMQTT(unsigned long currentMilliSec) {
 }
 
 
-void mqttSetup() {
-  setupConfig();
-  #ifdef DEBUG
-  Serial.begin(115200); // Start serial communication at 115200 baud
-  #endif
-  setupWifi.setupWifi();
+void mqttSetup() {  
+  setupConfig();  
+  WiFi.begin(STASSID, STAPSK);
   Serial.println("Got to connecting mqtt");
-  pubsubClient.setServer(mqtt_server, 1883);
+  pubsubClient.setServer(MQTT_SERVER, MQTT_PORT);
   if (mqttCallback == nullptr) {
     mqttCallback = callbackFromHost;
   }
@@ -187,12 +182,14 @@ void startupTest(MilliSec currentMilliSec) {
 #endif // DEBUG
 
 
-void mqttLoop() {
-  setupWifi.loopWifi();
-  if (!setupWifi.isReadyForProcessing()) {
+void mqttLoop() {  
+  setupConfig();
+  if (WiFi.status() != WL_CONNECTED) {
       Serial.println("WIFI NOT CONNECTED");
+      WiFi.begin(STASSID, STAPSK);
     // The WiFi is not ready yet so
     // don't do any further processing.
+    delay(500);
     return;
   }
   while(!pubsubClient.connected()) {

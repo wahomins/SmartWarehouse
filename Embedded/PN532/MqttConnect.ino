@@ -14,6 +14,7 @@ SetupWifi setupWifi(
 
 const char* mqtt_server = MQTT_SERVER;
 std::function<void(String&, String&)> mqttCallback = nullptr;
+bool isConnected = false;
 
 static PubSubClient pubsubClient(setupWifi.getWiFiClient());
 
@@ -55,7 +56,7 @@ void callbackFromHost(String &topicStr, String &payloadStr) {
   //   digitalWrite(ledPinNak, LOW);
   //   delay(500);
   // } 
-  Serial.println("Handling on the default handler");
+  Serial.println("Handling on the default handler, need a check to control this behaiour");
 }
 void authCallBack(String &topicStr, String &payloadStr) {
 

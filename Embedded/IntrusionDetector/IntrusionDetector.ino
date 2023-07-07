@@ -1,9 +1,13 @@
 
-#include <Key.h>
 #include <Keypad.h>
 #include <Keypad_I2C.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "secrets.h"
+#include <ArduinoJson.h>
+#include "SetupWifi.h"
+#include "FunctionHandler.h"
+
 
 #define I2CADDR 0x25 // Set the Address of the PCF8574
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -21,6 +25,9 @@ bool intruder_detected = false;
 bool keying_pass = false;
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+unsigned long lastExecutionTime = 0;
+unsigned long interval = 4000;  // 7 seconds interval
 
 const byte ROWS = 4; // Set the number of Rows
 const byte COLS = 4; // Set the number of Columns
@@ -64,27 +71,44 @@ void printScreen(String text){
   display.display(); 
 
 }
+void receiveFromHost(String &topicStr, String &payloadStr) {
+  // Create routines for your topic callbacks 
+  if (topicStr == topic_from_host) {
+    //handle any actions on server receive
+  } 
+   
+  Serial.println("Handling on the default handler");
+}
+
+void sendForProcessing(String event, String sev="OK") {
+  DynamicJsonDocument jsonDoc(256); // Adjust the size according to your JSON payload
+  JsonObject data = jsonDoc.createNestedObject("data");
+  data["name"] = THINGNAME;
+  data["severity"] = sev;
+  data["action"] = event;
+  publishMessage(data);
+} 
 void handleIntrusion(){
   if(strcmp(state,"DISARMED")==0){
     strcpy(state,"ARMED");
     //printOled("ARMED", true, 0, true); 
     Serial.println("ARMED");
    printScreen("ARMED");
+   sendForProcessing(state);
    
   }
   else if (strcmp(state,"ARMED")==0){
     if(intruder_detected){
       intruder_detected = false;
-    } else {
-      
-      strcpy(state,"DISARMED");
-      
+    } else {      
+      strcpy(state,"DISARMED");     
     }
       digitalWrite(siren_pin, LOW);
       digitalWrite(buzzer_pin, LOW);
       //printOled(state,true, 0, true);
       Serial.println(state);
       printScreen(state);
+      sendForProcessing(state); 
   }
   }
 void readKey(){
@@ -109,8 +133,9 @@ void readKey(){
           	 keying_pass = false;
        		 //printOled("WRONG PASS",false, 0, true);
             printScreen("WRONG PASS");
+            sendForProcessing("WRONG PASS", "HIGH");
             Serial.println("WRONG PASS");
-        	 strcpy(input_password,"    ");
+        	 strcpy(input_password,"");
       	}
       	keyPresses=0;
       }
@@ -128,7 +153,14 @@ void readKey(){
 }
 
 void detectIntuder(){
+
     if(digitalRead(intrusion_pin) == HIGH && strcmp(state,"ARMED")==0){
+      unsigned long currentTime = millis();
+     // Check if the interval has elapsed since the last execution
+      if (currentTime - lastExecutionTime >= interval) {
+        lastExecutionTime = currentTime;  // Update the last execution time
+        sendForProcessing("Intruder Detected!", "CRITICAL");
+      }
       digitalWrite(siren_pin, HIGH);
       digitalWrite(buzzer_pin, HIGH);
       if(!keying_pass) Serial.println("INTRUDER !!"); 
@@ -155,12 +187,17 @@ if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
   // Display static text
-  display.println("Intrusion System!");
+  display.println("Intrusion System");
   display.setTextSize(1);
   display.println("Enter Password");  
   display.display(); 
+  
+  mqttCallback = receiveFromHost;
+  mqttSetup();
 }
+
 void loop () {
- readKey(); 
- detectIntuder();
+  mqttLoop();
+  readKey(); 
+  detectIntuder();
 }

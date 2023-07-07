@@ -22,24 +22,18 @@ int fan_pin = 15;
 MQ2 mq2(Analog_Input);
 
 unsigned long lastExecutionTime = 0;
-unsigned long interval = 7000;  // 7 seconds interval
+unsigned long interval = 5000;
 
-void printScreen(String text){
-  display.fillRect(0, 24, SCREEN_WIDTH, 16, SSD1306_BLACK);
+void printScreen(String text, int x=0, int y=22){
+  display.fillRect(x, y, SCREEN_WIDTH, 16, SSD1306_BLACK);
   display.setTextSize(1);
   display.setCursor(0, 30);
   // Display static text
-  Serial.println(F("printing"));
   display.println(text);
   display.display(); 
 }
 void printReadings(String text){
-  display.fillRect(0, 24, SCREEN_WIDTH, 16, SSD1306_BLACK);
-  display.setTextSize(1);
-  display.setCursor(0, 30);
-  // Display static text
-  display.println(text);
-  display.display(); 
+  printScreen(text, 0,30);
 }
 void receiveFromHost(String &topicStr, String &payloadStr) {
   // Create routines for your topic callbacks 
@@ -47,15 +41,16 @@ void receiveFromHost(String &topicStr, String &payloadStr) {
     //handle any actions on server receive
   } 
    
-  Serial.println("Handling on the default handler");
 }
 
-void sendForProcessing(int reading, String gasType ) {
+void sendForProcessing(int reading, String gasType, String severity = "LOW" ) {
   DynamicJsonDocument jsonDoc(256); // Adjust the size according to your JSON payload
   JsonObject data = jsonDoc.createNestedObject("data");
   data["name"] = THINGNAME;
   data["action"] = String(gasType+"_detected");
   data["reading"] = reading;
+  data["units"] = "ppm";
+  data["severity"] = severity;
   publishMessage(data);
 } 
 void setup() {
@@ -94,16 +89,19 @@ void handleGasreading(int reading, String gasType ){
     Serial.println(reading);
     unsigned long currentTime = millis();
      // Check if the interval has elapsed since the last execution
-    if (currentTime - lastExecutionTime >= interval) {
-      lastExecutionTime = currentTime;  // Update the last execution time
-      sendForProcessing(reading, gasType);
-    }
+    String severity = "LOW";
     if(gasType=="SMOKE"){
   //Handle action for smoke
-        digitalWrite(normal_pin, LOW);
-        digitalWrite(siren_pin, HIGH);
-        digitalWrite(buzzer_pin, HIGH);
-        printScreen("FIRE");
+      digitalWrite(normal_pin, LOW);
+      digitalWrite(siren_pin, HIGH);
+      digitalWrite(buzzer_pin, HIGH);
+      if(reading > 2000 && reading < 5000) {
+        severity = "HIGH";
+      }
+      if(reading > 5000) {
+        severity = "CRITICAL";
+      }
+      printScreen("FIRE");
     } else if(gasType=="CO"){
 //Handle action for carbon Monoxide
       digitalWrite(normal_pin, LOW);
@@ -111,6 +109,12 @@ void handleGasreading(int reading, String gasType ){
       //digitalWrite(buzzer_pin, HIGH);
       digitalWrite(fan_pin, HIGH);
       printScreen("CARBON MONOXIDE (CO)");
+      if(reading > 1000 && reading < 3000) {
+        severity = "HIGH";
+      }
+      if(reading > 50) {
+        severity = "CRITICAL";
+      }
     } else if(gasType=="LPG"){
         //Handle action for Liquified petroleum gas
         digitalWrite(normal_pin, LOW);
@@ -118,7 +122,19 @@ void handleGasreading(int reading, String gasType ){
       // digitalWrite(buzzer_pin, HIGH);
         digitalWrite(fan_pin, HIGH);
         printScreen("LPG GAS");
+        if(reading > 100 && reading < 1000) {
+          severity = "HIGH";
+        }
+        if(reading > 1000) {
+          severity = "CRITICAL";
+        }
     }
+    if (currentTime - lastExecutionTime >= interval) {
+      lastExecutionTime = currentTime;  // Update the last execution time
+      sendForProcessing(reading, gasType,severity);
+      delay(500);
+    }
+    printReadings(String(gasType + " : " + reading));
   }else{
     printScreen("LEVELS: OK");
     digitalWrite(normal_pin, HIGH);

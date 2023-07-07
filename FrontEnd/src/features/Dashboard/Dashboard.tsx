@@ -23,43 +23,25 @@ function createData(status: string, number: number) {
   return { status, number };
 }
 
-const rows = [createData('Meat', 44), createData('Vegetable', 55), createData('Rice', 13)];
+const rows = [createData('Network Equipment', 44), createData('Customer Premises Equipment', 55), createData('Spare Parts', 13)];
 
 function createDataTodo(title: string, author: string, severity: string, status: string) {
   return { title, author, severity, status };
 }
 
 const todos = [
-  createDataTodo('Learn React', 'Tony Nguyen', 'low', 'completed'),
-  createDataTodo('Learn React', 'Tony Nguyen', 'medium', 'new'),
-  createDataTodo('Learn React', 'Tony Nguyen', 'high', 'inprocess'),
-  createDataTodo('Learn React', 'Tony Nguyen', 'high', 'completed'),
-  createDataTodo('Learn React', 'Tony Nguyen', 'medium', 'new'),
-  createDataTodo('Learn React', 'Tony Nguyen', 'medium', 'inprocess'),
-];
-
-function createDataUser(email: string, role: string) {
-  return { email, role };
-}
-
-const users = [
-  createDataUser('nhattruong1811@gmail.com', 'Admin'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('khanh@gmail.com', 'Collaborator'),
-  createDataUser('minh@gmail.com', 'Collaborator'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('david@gmail.com', 'Operator'),
-  createDataUser('david@gmail.com', 'Operator'),
+  createDataTodo('Smoke Sensor Callibration', 'Patrick', 'High', 'completed'),
+  createDataTodo('Record Taking', 'IOT User', 'medium', 'new'),
+  createDataTodo('TroubleShooting', 'Collo', 'high', 'inprocess'),
+  createDataTodo('Safety Inspection', 'Patrick', 'high', 'completed'),
+  createDataTodo('Safety Report', 'Patrick', 'medium', 'new'),
 ];
 
 const options: ApexOptions = {
   chart: {
     type: 'pie',
   },
-  labels: ['Meat', 'Vegetable', 'Rice'],
+  labels: ['Network Equipment', 'Customer Premises Equipment', 'Spare Parts'],
 };
 
 const series = [44, 55, 13];
@@ -75,7 +57,7 @@ function Dashboard() {
           <Paper>
             <Box m={2}>
               <Grid container item xs={12}>
-                <h2>Products</h2>
+                <h2>In Store</h2>
               </Grid>
               <Grid container justify="space-between">
                 <Grid item xs={12} sm={12} md={4}>
@@ -156,35 +138,6 @@ function Dashboard() {
                         >
                           {row.status}
                         </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={12} md={5}>
-          <Paper>
-            <Box m={2}>
-              <Grid container item xs={12}>
-                <h2>Users</h2>
-              </Grid>
-              <TableContainer>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Email</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {users.map((row, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell component="th" scope="row">
-                          {row.email}
-                        </TableCell>
-                        <TableCell>{row.role}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

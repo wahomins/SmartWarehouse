@@ -8,18 +8,18 @@
 #define MAJOR_VER "00"
 #define MINOR_VER "00"
 
-#define THINGNAME "mainDoorNfcReader";
+#define THINGNAME "Main Door Card Scanner";
 
-const char *STASSID = "KHAN";
-const char *STAPSK = "Qwertyu80p";
+const char *STASSID = "Lil_khan";
+const char *STAPSK = "Qwetyu8op{";
 
 int8_t TIME_ZONE = +3; //Nairobi(Kenya): +3 UTC
 
 const char* MQTT_SERVER = "142.93.52.78";
-const char* MQTT_PORT = "8883";
+const char* MQTT_PORT = "1883";
 const char* MQTT_USER = "mosquitto";
 const char* MQTT_PASS = "mosquitto";
-const char DEVICE_ID[] = "234ertyui";
+const char DEVICE_ID[] = "64a63c908fcd7838d8ebfb22";
 char TOPIC_TO_HOST[] = "TO_HOST/Authentication/nfc/";
 char TOPIC_FROM_HOST[] = "TO_DEVICE/Authentication/nfc/";
 char TOPIC_CLIENT_CONNECTION[] = "CLIENT_CONNECTIONS/activity/";

@@ -1,16 +1,16 @@
 #include <Arduino.h>
 #include <ESP32QRCodeReader.h>
 #include <ArduinoJson.h>
-#include "SetupWifi.h"
-#include "FunctionHandler.h"
+#include <WiFi.h>
 #include "secrets.h"
+#include "FunctionHandler.h"
 
 ESP32QRCodeReader reader(CAMERA_MODEL_AI_THINKER);
 
 void receiveFromHost(String &topicStr, String &payloadStr) {
   // Create routines for your topic callbacks 
   if (topicStr == topic_from_host) {
-        handleAuthentication(payloadStr);
+        // handleAuthentication(payloadStr);
   } 
    
   Serial.println("Handling on the default handler");

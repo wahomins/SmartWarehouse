@@ -22,12 +22,14 @@ const Error404View = lazy(() => import('features/Error404View'));
 const DenyView = lazy(() => import('features/DenyView'));
 const DeviceAdd = lazy(() => import('features/Product/DevicesAdd'));
 const DeviceList = lazy(() => import('features/Product/DevicesList'));
+const DeviceLogs = lazy(() => import('features/Product/DevicesActivity'));
 const Users = lazy(() => import('features/Users/UsersList'));
 const UserAccesslogs = lazy(() => import('features/Users/UserAccesslogs'));
 const Dashboard = lazy(() => import('features/Dashboard'));
 const Playbackground = lazy(() => import('features/Playbackground'));
 const Login = lazy(() => import('features/Login'));
 const Kanban = lazy(() => import('features/Kanban'));
+const WarehouseList = lazy(() => import('features/Warehouses/List'));
 
 const routesConfig: IRoutes[] = [
   {
@@ -82,6 +84,12 @@ const routesConfig: IRoutes[] = [
       },
       {
         exact: true,
+        path: PATH_NAME.DEVICE_LOGS,
+        component: DeviceLogs,
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD],
+      },
+      {
+        exact: true,
         path: PATH_NAME.KANBAN,
         component: Kanban,
         requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
@@ -96,6 +104,12 @@ const routesConfig: IRoutes[] = [
         exact: true,
         path: PATH_NAME.USERS_ACCESS_LOGS,
         component: UserAccesslogs,
+        requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
+      },
+      {
+        exact: true,
+        path: PATH_NAME.WAREHOUSE_LIST,
+        component: WarehouseList,
         requireRoles: [USER_ROLE.ADMIN, USER_ROLE.LEAD, USER_ROLE.STAFF],
       },
       {

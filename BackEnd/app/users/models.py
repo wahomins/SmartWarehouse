@@ -74,10 +74,7 @@ class UserModel:
     def get_user_by_id_card(self, user_id):
         # Retrieve a user by their ID or cardNumber
         try:
-            if isinstance(user_id, ObjectId):
-                query = {"_id": ObjectId(user_id)}
-            else:
-                query = {"card_number": user_id}
+            query = {"_id": ObjectId(user_id)}
 
             encrypted_user = self.users_collection.find_one(query)
 
@@ -215,7 +212,6 @@ class UserModel:
         access_logs = format_mongo_response(UserAccessLog.objects())
         formatted_logs = []
         for log in access_logs:
-            logger.info(log)
             device_name = device_model.get_device_by_id(log['device_id'])
             user = self.get_user_by_id_card(log['user_id'])
             full_name = user['full_name'] if user else "Unknown User"
@@ -230,7 +226,6 @@ class UserModel:
                 "status": log['status'],
                 "meta_data": log.get('meta_data', {}),
             }
-
             formatted_logs.append(formatted_log)
 
         return formatted_logs

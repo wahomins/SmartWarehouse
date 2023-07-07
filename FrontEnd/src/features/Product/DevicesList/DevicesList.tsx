@@ -24,12 +24,46 @@ export default function DeviceList() {
     dispatch(fetchDevices());
   }, [dispatch]);
 
+  const mapData = (key: string, row: any, headerName: string): any => {
+    return row[key];
+  };
+
+  const onGridSearch = (rows: any[], searchValues: Record<string, string>, headers: any[]): any[] => {
+    const results: [number, number][] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+
+      for (let j = 0; j < headers.length; j++) {
+        const header = headers[j];
+        const { columnName } = header;
+        const searchValue = searchValues[columnName]?.toLowerCase();
+
+        if (searchValue) {
+          // Perform search where key in rows and value exists
+          const keys = Object.keys(row);
+          for (let k = 0; k < keys.length; k++) {
+            const key = keys[k];
+            const rowValue = row[key];
+            const formattedRowValue = String(rowValue)?.toLowerCase();
+            const regExp = new RegExp(searchValue, 'i');
+            if (regExp.test(formattedRowValue)) {
+              results.push(row);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return results;
+  };
+
   const table = {
     rows: devicesData || [],
     headers: [
-      { columnName: 'Device Name', key: 'name' },
+      { columnName: 'Device Name', key: 'name', search: true, orderable: true },
       { columnName: 'Description', key: 'description' },
-      { columnName: 'Device Group', key: 'device_group' },
+      { columnName: 'Device Group', key: 'device_group', search: true, orderable: true },
       { columnName: 'Device Sub-Group', key: 'device_sub_group' },
       { columnName: 'active', key: 'active' },
     ],
@@ -44,6 +78,8 @@ export default function DeviceList() {
       actions={actions}
       pagination={pagination}
       table={table}
+      mapData={mapData}
+      onGridSearch={onGridSearch}
     />
   );
 }

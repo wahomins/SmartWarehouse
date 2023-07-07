@@ -37,7 +37,15 @@ def handle_message(client, message, tmp):
                     response = json.dumps({
                                     'status_code': 200,
                                     'status': "processed"
-                                })   
+                                })
+            
+            if route == "Security":
+                if handler == "Intrusion":
+                    DeviceActivityLog.log_device_activity(f'{route}/{handler}', device_id, 'Intrusion log created', payload_data['data'])
+                    response = json.dumps({
+                                    'status_code': 200,
+                                    'status': "processed"
+                                }) 
 
             client.publish(message.topic.replace('HOST', 'DEVICE'), response)
             # Add more conditional statements for other routes

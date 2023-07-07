@@ -7,10 +7,13 @@ export const PATH_NAME = {
   LOGIN: '/login',
   DEVICE: '/devices',
   DEVICE_LIST: '/device/list',
+  DEVICE_LOGS: '/device/logs',
   DEVICE_ADD: '/device/add',
   USER_ADD: '/users/add',
   USERS: '/users',
   USERS_LIST: '/users',
   KANBAN: '/kanban',
   USERS_ACCESS_LOGS: '/users/accesslogs',
+  WAREHOUSE_LIST: '/warehouse/list',
+  WAREHOUSE_ADD: '/warehouse/list',
 };

@@ -50,6 +50,32 @@ export const navBarCommon = [
             href: PATH_NAME.DEVICE_LIST,
             label: DRAWER_MENU_LABEL.DEVICE_LIST,
           },
+          {
+            title: 'Devices Log',
+            icon: ViewListIcon,
+            href: PATH_NAME.DEVICE_LOGS,
+            label: DRAWER_MENU_LABEL.DEVICE_LOGS,
+          },
+        ],
+      },
+      {
+        title: 'Warehouse',
+        icon: AssessmentIcon,
+        href: PATH_NAME.WAREHOUSE_LIST,
+        label: DRAWER_MENU_LABEL.WAREHOUSE,
+        items: [
+          {
+            title: 'Add Warehouse',
+            icon: AddIcon,
+            href: PATH_NAME.WAREHOUSE_ADD,
+            label: DRAWER_MENU_LABEL.WAREHOUSE_ADD,
+          },
+          {
+            title: 'List Warehouses',
+            icon: ViewListIcon,
+            href: PATH_NAME.WAREHOUSE_LIST,
+            label: DRAWER_MENU_LABEL.WAREHOUSE_LIST,
+          },
         ],
       },
       {
